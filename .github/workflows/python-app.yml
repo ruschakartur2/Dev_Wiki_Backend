@@ -46,3 +46,15 @@ jobs:
 
     - name: Run tests
       run: python manage.py test
+      
+  deploy:     
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Connect to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{secrets.USERNAME}}
+          password: ${{secrets.PASSWORD}}
+          
