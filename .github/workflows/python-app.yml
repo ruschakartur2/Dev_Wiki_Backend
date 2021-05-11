@@ -57,7 +57,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          port: ${{ sectets.PORT }}
+          port: ${{ secrets.PORT }}
           script: |
             /home/username/projects/Dev_Wiki_Backend/.github/workflows/deploy_server.sh
           
