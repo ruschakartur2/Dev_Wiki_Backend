@@ -6,7 +6,7 @@ SCRIPTPATH=`dirname $SCRIPT`
 PYTHON="$SCRIPTPATH/../venv/bin/python"
 PIP="$SCRIPTPATH/../venv/bin/pip"
 
-echo "Deploying application ..."
+echo "Deploying application ...."
 
 cd $(dirname $SCRIPTPATH)
 
