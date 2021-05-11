@@ -11,8 +11,8 @@ echo "Deploying application ..."
 cd $(dirname $SCRIPTPATH)
 
 # Update codebase
-git fetch origin production
-git reset --hard origin/production
+git fetch origin master
+git reset --hard origin/master
 
 $PIP install -r requirements.txt
 
@@ -22,6 +22,6 @@ $PYTHON manage.py collectstatic --noinput;
 # Migrate database
 $PYTHON manage.py migrate
 
-systemctl --user restart django_deploy_test
+systemctl --user restart Dev_Wiki_Backend
 
 echo "Application deployed!"
