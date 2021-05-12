@@ -62,7 +62,11 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-  
+    - name: Download a single artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: my-artifact
+        
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
@@ -73,10 +77,7 @@ jobs:
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
 
-    - name: Download a single artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: my-artifact
+  
 
           
         
