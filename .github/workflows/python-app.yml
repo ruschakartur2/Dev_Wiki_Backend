@@ -51,14 +51,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - name: Deploy to Staging server
+      - name: Deploy to Server
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.HOST }}
-          REMOTE_PORT: ${{ secrets.PORT }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          
+            SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+            ARGS: "-rltgoDzvO --delete"
+            SOURCE: "dist/"
+            REMOTE_HOST: ${{ secrets.HOST }}
+            REMOTE_USER: ${{ secrets.USERNAME }}
+            EXCLUDE: "/dist/, /node_modules/"
+
           
         
             
