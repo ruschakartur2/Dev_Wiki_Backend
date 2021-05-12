@@ -63,7 +63,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: my-artifact
-        
+                
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
@@ -73,7 +73,9 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
-
+    
+    - name: Print hello in server
+      run: echo 'hello'
   
 
           
