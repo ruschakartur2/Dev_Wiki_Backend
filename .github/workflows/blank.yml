@@ -74,9 +74,8 @@ jobs:
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
           ARGS: |
-            mkdir test
             pip install -r requirements.txt
-
+            python manage.py runserver
 
           
         
