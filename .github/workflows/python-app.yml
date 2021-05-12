@@ -58,11 +58,11 @@ jobs:
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           SOURCE: "."
-          ARGS: "-rltgoDzvO"
+          ARGS: "-rltgoDzvO --delete"
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: '/home/artur/'
+          TARGET: '/home/artur/backend'
 
           
         
