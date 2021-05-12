@@ -51,6 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - name : Clean cache
+        run: ssh-keygen -R 192.168.1.123
       - name: Deploy to Staging server
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
