@@ -74,12 +74,8 @@ jobs:
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
     
-    - name: Test task
-      run: | 
-        mkdir tests
-        cd tests
-        mkdir requir.txt
-        
+      with:
+        run: mkdir test
 
           
         
