@@ -58,6 +58,7 @@ jobs:
             ARGS: "-rltgoDzvO --delete"
             SOURCE: "dist/"
             REMOTE_HOST: ${{ secrets.HOST }}
+            REMOTE_PORT: ${{ secrets.PORT }}
             REMOTE_USER: ${{ secrets.USERNAME }}
             EXCLUDE: "/dist/, /node_modules/"
 
