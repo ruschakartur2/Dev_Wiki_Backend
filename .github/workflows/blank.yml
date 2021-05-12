@@ -74,9 +74,12 @@ jobs:
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
     
-    - name: Print hello in server
-      run: echo 'hello'
-  
+    - name: Test task
+      run: | 
+        mkdir tests
+        cd tests
+        mkdir requir.txt
+        
 
           
         
