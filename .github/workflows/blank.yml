@@ -73,9 +73,10 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
-    
-      with:
-        run: mkdir test
+          ARGS: |
+            mkdir test
+            pip install -r requirements.txt
+
 
           
         
