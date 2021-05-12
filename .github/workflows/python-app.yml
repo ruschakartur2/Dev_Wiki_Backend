@@ -51,13 +51,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - name: Connect to server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
-          script: |
-            /home/username/projects/Dev_Wiki_Backend/.github/workflows/deploy_server.sh
+      - name: Deploy to Staging server
+        uses: easingthemes/ssh-deploy@v2.1.5
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SOURCE: "/Dev_WIki_Backend/"
+          REMOTE_HOST: ${{ secrets.HOST }}
+          REMOTE_PORT: ${{ secrets.PORT }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: ${{ secrets.TARGET }}
           
+          
+        
+            
