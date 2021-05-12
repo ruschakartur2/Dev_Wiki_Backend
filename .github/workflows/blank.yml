@@ -48,9 +48,6 @@ jobs:
       run: python manage.py test
     - uses: actions/checkout@v2
 
-    - run: mkdir -p path/to/artifact
-
-    - run: echo hello > artifact.txt
 
     - uses: actions/upload-artifact@v2
       with:
