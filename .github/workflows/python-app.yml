@@ -61,7 +61,7 @@ jobs:
                 id: deploy_theme
                 uses: Pendect/action-rsyncer@v1.1.0
                 env:
-                    DEPLOY_KEY: ${{secrets.SECRET_SERVER_KEY}}
+                    DEPLOY_KEY: ${{secrets.SERVER_SSH_KEY}}
                 with:
                     flags: '-avc --delete'
                     src: 'dist/'
