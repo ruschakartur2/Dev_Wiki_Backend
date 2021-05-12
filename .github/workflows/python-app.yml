@@ -55,7 +55,7 @@ jobs:
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          SOURCE: "/Dev_WIki_Backend/"
+          SOURCE: "./"
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           REMOTE_USER: ${{ secrets.USERNAME }}
