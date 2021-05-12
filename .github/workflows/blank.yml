@@ -61,7 +61,7 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
-          TARGET: 'home/artur/'
+          TARGET: '/home/artur/backend'
 
           
         
