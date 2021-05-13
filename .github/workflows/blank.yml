@@ -73,6 +73,5 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
-          ARGS: |
-            echo "hello"
+          ARGS: "-rltgoDzvO"
             
