@@ -73,20 +73,12 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
-    - name: ssh commands
-      uses: fifsky/ssh-action@master
+    - name: Execute SSH commmands on remote server
+      uses: JimCronqvist/action-ssh@master
       with:
-        command: |
-          pip install virtualenv
-          python3 -m venv env
-          source env/bin/activate
-          pip install -r requirements.txt
-          python manage.py collectstatic
-          python manage.py runserver 0.0.0.0:8000
-          
-        host: ${{ secrets.HOST }}
-        user: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SERVER_SSH_KEY}}
+        hosts: ${{secrets.REMOTE_USER}}'@'${{secrets.HOST}} ' -p'${{secrets.PORT}}
+        privateKey: ${{ secrets.SERVER_SSH_KEY }}
+        command: ls -lah
 
           
         
