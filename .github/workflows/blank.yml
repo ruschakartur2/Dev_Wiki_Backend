@@ -73,13 +73,12 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
-    - name: Execute SSH commmands on remote server
-      uses: JimCronqvist/action-ssh@master
-      with:
-        hosts: 'artur@135.181.176.18:22165'
-        privateKey: ${{ secrets.SERVER_SSH_KEY }}
-        command: ls -lah
-
+          ARGS: |
+            pip install virtualenv
+            python3 -m venv env
+            source env/bin/activate
+            pip install -r requirements.txt
+            python manage.py collectstatic
           
         
             
