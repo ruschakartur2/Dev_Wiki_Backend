@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -81,9 +82,9 @@ WSGI_APPLICATION = 'DevWikiBackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'github_actions',
-        'USER': 'ar2r4ik',
-        'PASSWORD': 'heofrfhneh555605',
+        'NAME': 'template1',
+        'USER': 'postgres',
+        'PASSWORD': 'test',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }

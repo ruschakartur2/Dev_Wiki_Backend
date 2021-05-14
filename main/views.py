@@ -1,5 +1,8 @@
-from django.http import HttpResponse
+from django.contrib.auth.models import User
+from rest_framework import viewsets
+from main.serializers import UserSerializer
 
+class UserViewSet(viewsets.ModelViewSet):
 
-def home(request):
-    return HttpResponse('<h1>Hello world</h1>')
+    queryset = User.objects.all().order_by('-id')
+    serializer_class = UserSerializer
