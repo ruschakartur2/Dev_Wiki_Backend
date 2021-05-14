@@ -73,5 +73,5 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
-          ARGS: "sudo systemctl start emperor.uwsgi.service"
+          ARGS: "-rltgoDzvO"
             
