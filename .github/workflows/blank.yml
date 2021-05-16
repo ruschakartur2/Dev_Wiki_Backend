@@ -73,7 +73,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
-          ARGS: "systemctl restart emperor.uwsgi.service"
+          ARGS: "-rltgoDzvO"
           
     - name: restart uwsgi server
       uses: fifsky/ssh-action@master
