@@ -79,7 +79,7 @@ jobs:
       uses: fifsky/ssh-action@master
       with:
         command: |
-            systemctl restart emperor.uwsgi.service
+            sudo systemctl restart emperor.uwsgi.service
         host: ${{ secrets.HOST }}
         port: ${{ secrets.PORT }}
         user: ${{ secrets.REMOTE_USER }}
