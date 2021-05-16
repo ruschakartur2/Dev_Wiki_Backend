@@ -82,9 +82,9 @@ WSGI_APPLICATION = 'DevWikiBackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'template1',
-        'USER': 'postgres',
-        'PASSWORD': 'test',
+        'NAME': 'devwiki_db',
+        'USER': 'ar2r4ik',
+        'PASSWORD': 'heofrfhneh555605',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
