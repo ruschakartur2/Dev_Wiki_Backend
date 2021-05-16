@@ -75,12 +75,12 @@ jobs:
           TARGET: '/home/artur/backend'
           ARGS: "-rltgoDzvO"
           
-    - name: restart uwsgi server
-      uses: fifsky/ssh-action@master
-      with:
-        command: |
-            sudo systemctl restart emperor.uwsgi.service
-        host: ${{ secrets.HOST }}
-        port: ${{ secrets.PORT }}
-        user: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SERVER_SSH_KEY}}            
+  #  - name: restart uwsgi server
+   #   uses: fifsky/ssh-action@master
+    #  with:
+     #   command: |
+      #      sudo systemctl restart emperor.uwsgi.service
+       # host: ${{ secrets.HOST }}
+        #port: ${{ secrets.PORT }}
+        #user: ${{ secrets.REMOTE_USER }}
+        #key: ${{ secrets.SERVER_SSH_KEY}}            
