@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env()
+environ.Env.read_env()
 
 
 # Quick-start development settings - unsuitable for production
@@ -22,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 
     
-SECRET_KEY='django-insecure-s(v0#ttahesrh49k^6tvp@5fli2m61!*o$$5p#7b&4^ykkij_)'
+SECRET_KEY=env.str('SECRET_KEY')
 
   
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -82,9 +85,9 @@ WSGI_APPLICATION = 'DevWikiBackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'devwiki_db',
-        'USER': 'ar2r4ik',
-        'PASSWORD': 'heofrfhneh555605',
+        'NAME': env.str('db_name'),
+        'USER': env.str('db_user'),
+        'PASSWORD': env.str('db_password'),
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
