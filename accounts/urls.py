@@ -1,7 +1,6 @@
-from django.urls import path
-
-from accounts.views import RegisterAPIView
+from django.conf.urls import url
+from django.urls import path, include
 
 urlpatterns = [
-    path('register/', RegisterAPIView.as_view(),name='register'),
+    url(r'^auth/',include('djoser.urls'))
 ]
