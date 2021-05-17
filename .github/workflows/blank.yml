@@ -72,7 +72,7 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
-          EXCLUDE: 'DevWikiBackend/.env'
+          EXCLUDE: "./DevWikiBackend/.env"
           TARGET: '/home/artur/backend'
           ARGS: "-rltgoDzvO"
           
