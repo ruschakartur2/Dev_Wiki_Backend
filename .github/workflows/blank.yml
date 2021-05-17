@@ -72,8 +72,9 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
-          EXCLUDE: ./DevWikiBackend/.env
           TARGET: '/home/artur/backend'
+          EXCLUDE: "DevWikiBackend/.env"
+
           ARGS: "-rltgoDzvO"
           
   #  - name: restart uwsgi server
