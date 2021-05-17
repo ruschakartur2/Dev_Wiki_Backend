@@ -55,7 +55,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: my-artifact
-        path: .
+        path: ./dist/
       
   
   deploy:
@@ -71,7 +71,7 @@ jobs:
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          SOURCE: my-artifact
+          SOURCE: "./dist/"
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
