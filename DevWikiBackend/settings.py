@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'accounts',
+
     'rest_framework',
+    'knox'
 ]
 
 MIDDLEWARE = [
@@ -100,6 +103,10 @@ if os.environ.get('GITHUB_WORKFLOW'):
            'PORT': '5432',
         }
     }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
