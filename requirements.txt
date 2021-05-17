@@ -1,9 +1,7 @@
 asgiref==3.3.4
 attrs==21.2.0
 cffi==1.14.5
-cryptography==3.4.7
 Django==3.2.2
-django-rest-knox==4.1.0
 djangorestframework==3.12.4
 django-environ
 environ==1.0
