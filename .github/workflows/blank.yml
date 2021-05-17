@@ -55,7 +55,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: my-artifact
-        path: ./dist/
+        path: .
       
   
   deploy:
@@ -71,12 +71,14 @@ jobs:
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          SOURCE: "./dist/"
+          SOURCE: "."
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
 
-          ARGS: "-rltgoDzvO"
+          ARGS: |
+            "pip install -r requirements.txt"
+            "python manage.py migrate"
   
           
