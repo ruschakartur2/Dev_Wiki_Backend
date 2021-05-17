@@ -78,21 +78,15 @@ jobs:
           TARGET: '/home/artur/backend'
 
           ARGS: "-rltgoDzvO"
-    - name: executing remote ssh commands using ssh key
-      uses: appleboy/ssh-action@master
-      with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.PORT }}
-          script: sudo -tt systemctl restart emperor.uwsgi.service
+  
           
-  #  - name: restart uwsgi server
-   #   uses: fifsky/ssh-action@master
-    #  with:
-     #   command: |
-      #      sudo systemctl restart emperor.uwsgi.service
-       # host: ${{ secrets.HOST }}
-        #port: ${{ secrets.PORT }}
-        #user: ${{ secrets.REMOTE_USER }}
-        #key: ${{ secrets.SERVER_SSH_KEY}}            
+    - name: restart uwsgi server
+      uses: fifsky/ssh-action@master
+      with:
+        command: |
+            cd backend
+            bash restart.sh
+        host: ${{ secrets.HOST }}
+        port: ${{ secrets.PORT }}
+        user: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY}}            
