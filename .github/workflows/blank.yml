@@ -6,9 +6,12 @@ name: Python application
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - 'DevWikiBackend/.env'
   pull_request:
     branches: [ master ]
-
+    paths-ignore:
+      - 'DevWikiBackend/.env'
 jobs:
   build:
 
@@ -73,5 +76,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: '/home/artur/backend'
+
           ARGS: "-rltgoDzvO"
-            
+  
+          
