@@ -5,6 +5,7 @@ cryptography==3.4.7
 Django==3.2.2
 django-rest-knox==4.1.0
 djangorestframework==3.12.4
+django-environ
 environ==1.0
 iniconfig==1.1.1
 packaging==20.9
