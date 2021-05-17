@@ -78,6 +78,14 @@ jobs:
           TARGET: '/home/artur/backend'
 
           ARGS: "-rltgoDzvO"
+    - name: executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@master
+      with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: whoami
           
   #  - name: restart uwsgi server
    #   uses: fifsky/ssh-action@master
