@@ -23,8 +23,7 @@ environ.Env.read_env()
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-if os.environ.get('GITHUB_WORKFLOW'):
-    SECRET_KEY='testtesttest'    
+
 
    
 SECRET_KEY=env.str('SECRET_KEY')
@@ -51,7 +50,6 @@ INSTALLED_APPS = [
     'accounts',
 
     'rest_framework',
-    'knox'
 ]
 
 MIDDLEWARE = [
@@ -111,9 +109,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
         }
     }
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
-}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
