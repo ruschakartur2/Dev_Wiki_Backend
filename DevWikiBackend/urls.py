@@ -14,11 +14,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
+from rest_framework.documentation import include_docs_urls
+from rest_framework.schemas import get_schema_view
+from rest_framework_swagger.views import get_swagger_view
+
+from DevWikiBackend import settings
+
+schema_view = get_swagger_view(title='Pastebin API')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'rest-auth/', include('rest_auth.urls')),
-    url(r'rest-auth/registration/', include('rest_auth.registration.urls'))
-]
+    url(r'rest-auth/registration/', include('rest_auth.registration.urls')),
+    url(r'rest-auth/social/', include('rest_framework_social_oauth2.urls')),
+    url(r'docs/',schema_view)
+] + static(settings.STATIC_URL)
