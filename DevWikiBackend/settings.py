@@ -42,16 +42,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-     'users',
+    'users',
 
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
     'rest_auth',
     'allauth',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
     'allauth.account',
     'rest_auth.registration',
-
 
     'oauth2_provider',
     'social_django',
@@ -179,7 +180,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = 'api/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR,'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 VENV_PATH = os.path.dirname(BASE_DIR)
 STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
 # Default primary key field type
@@ -187,7 +188,6 @@ STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 USE_X_FORWARDED_HOST = True
-FORCE_SCRIPT_NAME = '/api'
 SOCIAL_AUTH_GITHUB_KEY = 'f64304f6601dbf74431b'
 SOCIAL_AUTH_GITHUB_SECRET = 'd36f978f5e8fba938744ee5e844480b2c2033059'
 SOCIAL_AUTH_GITHUB_SCOPE = ['email']
@@ -196,5 +196,5 @@ REST_AUTH_SERIALIZERS = {
 
 }
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER' : 'users.serializers.UserRegisterSerializer',
+    'REGISTER_SERIALIZER': 'users.serializers.UserRegisterSerializer',
 }

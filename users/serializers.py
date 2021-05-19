@@ -14,11 +14,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserRegisterSerializer(serializers.Serializer):
+    """Serializer to register user with email and password"""
     email = serializers.EmailField(required=allauth_settings.EMAIL_REQUIRED)
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
 
     def validate_email(self, email):
+        """Function to validate email"""
         email = get_adapter().clean_email(email)
         if allauth_settings.UNIQUE_EMAIL:
             if email and email_address_exists(email):
@@ -27,9 +29,11 @@ class UserRegisterSerializer(serializers.Serializer):
         return email
 
     def validate_password1(self, password):
+        """Function to validate password"""
         return get_adapter().clean_password(password)
 
     def validate(self, data):
+        """Function to check if password1 equal password2"""
         if data['password1'] != data['password2']:
             raise serializers.ValidationError(_("The two password fields didn't match."))
         return data
@@ -44,6 +48,7 @@ class UserRegisterSerializer(serializers.Serializer):
         pass
 
     def save(self, request):
+        """Function to save user with email and password"""
         adapter = get_adapter()
         user = adapter.new_user(request)
         self.cleaned_data = self.get_cleaned_data()
