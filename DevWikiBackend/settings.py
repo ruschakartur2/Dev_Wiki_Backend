@@ -111,13 +111,13 @@ if os.environ.get('GITHUB_WORKFLOW'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
+            'DISABLE_SERVER_SIDE_CURSORS': True,
             'NAME': 'github_actions',
             'USER': 'admin',
             'PASSWORD': 'admin',
             'HOST': '127.0.0.1',
             'PORT': '5432',
         }
-        'DISABLE_SERVER_SIDE_CURSORS': True,
     }
 
 REST_FRAMEWORK = {
