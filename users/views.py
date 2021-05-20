@@ -1,3 +1,6 @@
+from django.contrib.auth import get_user_model
+from django.shortcuts import render
+from django.views.generic import ListView
 from rest_framework import generics, authentication, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
@@ -25,3 +28,4 @@ class ManageUserView(generics.RetrieveAPIView):
     def get_object(self):
         """Retrieve and return authenticated user"""
         return self.request.user
+

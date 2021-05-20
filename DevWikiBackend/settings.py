@@ -47,7 +47,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
+
+
     'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
 
 
 ]
@@ -118,7 +122,8 @@ if os.environ.get('GITHUB_WORKFLOW'):
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
@@ -143,8 +148,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 AUTHENTICATION_BACKENDS = [
-
-    'django.contrib.auth.backends.ModelBackend'
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.github.GithubAppAuth',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -173,7 +180,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 USE_X_FORWARDED_HOST = True
 SOCIAL_AUTH_GITHUB_KEY = 'f64304f6601dbf74431b'
 SOCIAL_AUTH_GITHUB_SECRET = 'd36f978f5e8fba938744ee5e844480b2c2033059'
-SOCIAL_AUTH_GITHUB_SCOPE = ['email']
+SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 
 CORS_ORIGIN_ALLOW_ALL = True

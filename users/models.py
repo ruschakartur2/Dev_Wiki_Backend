@@ -8,7 +8,8 @@ from django.db import models
 
 class CustomUserManager(BaseUserManager):
     """Custom user model manager where email is the unique"""
-    def create_user(self,email,password=None,**extra_fields):
+
+    def create_user(self, email, password=None, **extra_fields):
         """Create and save a User with the given email and password"""
         if not email:
             raise ValueError('The email is required')
@@ -33,10 +34,11 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
-    username = None
     email = models.EmailField(_('email address'), unique=True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     objects = CustomUserManager()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
