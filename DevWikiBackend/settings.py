@@ -43,31 +43,17 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'users',
-
+    'corsheaders',
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
-    'rest_auth',
-    'allauth',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.github',
-    'allauth.account',
-    'rest_auth.registration',
-
     'oauth2_provider',
-    'social_django',
-    'rest_framework_social_oauth2',
+
 
 ]
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -132,8 +118,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
-        'rest_framework_social_oauth2.authentication.SocialAuthentication',
+
     ),
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
@@ -158,9 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 AUTHENTICATION_BACKENDS = [
-    'social_core.backends.github.GithubOAuth2',
-    'social_core.backends.github.GithubAppAuth',
-    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+
     'django.contrib.auth.backends.ModelBackend'
 ]
 # Internationalization
@@ -191,10 +174,6 @@ USE_X_FORWARDED_HOST = True
 SOCIAL_AUTH_GITHUB_KEY = 'f64304f6601dbf74431b'
 SOCIAL_AUTH_GITHUB_SECRET = 'd36f978f5e8fba938744ee5e844480b2c2033059'
 SOCIAL_AUTH_GITHUB_SCOPE = ['email']
-REST_AUTH_SERIALIZERS = {
-    'LOGIN_SERIALIZER': 'users.serializers.UserSerializer',
 
-}
-REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'users.serializers.UserRegisterSerializer',
-}
+
+CORS_ORIGIN_ALLOW_ALL = True

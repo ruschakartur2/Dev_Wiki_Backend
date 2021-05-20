@@ -10,7 +10,7 @@ from DevWikiBackend import settings
 schema_view = get_swagger_view(title='Pastebin API')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    url(r'users/',include('users.urls')),
-    url(r'docs/',schema_view)
-] + static(settings.STATIC_URL)
+                  path('admin/', admin.site.urls),
+                  url(r'docs/', schema_view),
+                  path(r'users/', include('users.urls'))
+              ] + static(settings.STATIC_URL)

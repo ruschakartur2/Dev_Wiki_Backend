@@ -1,17 +1,27 @@
-from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from rest_auth.registration.views import SocialLoginView, SocialConnectView
+from rest_framework import generics, authentication, permissions
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
 
-CALLBACK_URL_YOU_SET_ON_GITHUB = 'localhost:8000/api'
-
-
-class GithubLogin(SocialLoginView):
-    adapter_class = GitHubOAuth2Adapter
-    callback_url = CALLBACK_URL_YOU_SET_ON_GITHUB
-    client_class = OAuth2Client
+from users.serializers import UserSerializer, AuthTokenSerializer
 
 
-class GithubConnect(SocialConnectView):
-    adapter_class = GitHubOAuth2Adapter
-    callback_url = CALLBACK_URL_YOU_SET_ON_GITHUB
-    client_class = OAuth2Client
+class CreateUserView(generics.CreateAPIView):
+    """Create a new user in the system"""
+    serializer_class = UserSerializer
+
+
+class CreateTokenView(ObtainAuthToken):
+    """Create a new auth token for user"""
+    serializer_class = AuthTokenSerializer
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class ManageUserView(generics.RetrieveAPIView):
+    """Manage the authenticated user"""
+    serializer_class = UserSerializer
+    authentication_classes = [authentication.TokenAuthentication,]
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user
