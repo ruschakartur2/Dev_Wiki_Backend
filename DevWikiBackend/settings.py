@@ -117,6 +117,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
             'HOST': '127.0.0.1',
             'PORT': '5432',
         }
+        'DISABLE_SERVER_SIDE_CURSORS': True,
     }
 
 REST_FRAMEWORK = {
