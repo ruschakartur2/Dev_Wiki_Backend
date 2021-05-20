@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 # Create your tests here.
 from django.urls import reverse
 
-CREATE_USER_URL = reverse('users:create')
+CREATE_USER_URL = reverse('create')
 
 
 class UserModelTests(TestCase):
