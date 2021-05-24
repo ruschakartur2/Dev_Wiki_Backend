@@ -184,3 +184,4 @@ SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+

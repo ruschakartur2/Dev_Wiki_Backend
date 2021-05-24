@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 CREATE_USER_URL = reverse('create')
-
+ 
 
 class UserModelTests(TestCase):
     """Tests for custom user model"""
@@ -34,7 +34,6 @@ class PublicUserAPITests(TestCase):
         payload = {
             'email': 'test@test.com',
             'password1': 'fhnehheofr555605',
-            'password2': 'fhnehheofr555605'
         }
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
