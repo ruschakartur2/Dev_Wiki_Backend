@@ -111,6 +111,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
+            'DISABLE_SERVER_SIDE_CURSORS': True,
             'NAME': 'github_actions',
             'USER': 'admin',
             'PASSWORD': 'admin',
@@ -184,4 +185,3 @@ SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 
 CORS_ORIGIN_ALLOW_ALL = True
-
