@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 CREATE_USER_URL = reverse('create')
-TOKEN_USER_URL = reverse('token')
+TOKEN_USER_URL = reverse('login')
 ME_URL = reverse('me')
 
 
