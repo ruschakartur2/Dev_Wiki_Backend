@@ -43,15 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'users',
+    'article',
+
     'corsheaders',
     'rest_framework',
-    'rest_framework_swagger',
     'rest_framework.authtoken',
-
-
+    'rest_framework_swagger',
     'oauth2_provider',
     'social_django',
-    'rest_framework_social_oauth2',
 
 
 ]
@@ -60,11 +59,14 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'DevWikiBackend.urls'
@@ -150,8 +152,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.github.GithubOAuth2',
-    'social_core.backends.github.GithubAppAuth',
-    'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 # Internationalization
@@ -170,7 +170,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = 'api/static/'
+STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 VENV_PATH = os.path.dirname(BASE_DIR)
 STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
@@ -182,6 +182,4 @@ USE_X_FORWARDED_HOST = True
 SOCIAL_AUTH_GITHUB_KEY = 'f64304f6601dbf74431b'
 SOCIAL_AUTH_GITHUB_SECRET = 'd36f978f5e8fba938744ee5e844480b2c2033059'
 SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
-
-
 CORS_ORIGIN_ALLOW_ALL = True
