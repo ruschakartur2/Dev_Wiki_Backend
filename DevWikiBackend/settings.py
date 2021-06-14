@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'users',
     'article',
 
+    'django_filters',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
@@ -128,6 +129,7 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
         'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 

@@ -44,7 +44,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'date_joined']
+        fields = ['id', 'username', 'email', 'date_joined']
 
 
 class TokenSerializer(serializers.ModelSerializer):
