@@ -4,12 +4,12 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
-from users.serializers import UserSerializer, AuthTokenSerializer, UserDetailSerializer, SocialAuthSerializer, \
-    UserRegistrationSerializer
+from users.serializers import UserDetailSerializer, SocialAuthSerializer, \
+    UserRegistrationSerializer, UserLoginSerializer, TokenSerializer
 from rest_framework.authtoken.models import Token
 
 
-class CreateUserView(generics.CreateAPIView):
+class CreateUserAPIView(generics.CreateAPIView):
     """Create a new user in the system"""
     authentication_classes = ()
     permission_classes = ()
@@ -29,13 +29,13 @@ class CreateUserView(generics.CreateAPIView):
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class CreateTokenView(ObtainAuthToken):
+class UserLoginAPIView(ObtainAuthToken):
     """Create a new auth token for user"""
-    serializer_class = AuthTokenSerializer
+    serializer_class = UserLoginSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
     def post(self, request, *args, **kwargs):
-        response = super(CreateTokenView, self).post(request, *args, **kwargs)
+        response = super(UserLoginAPIView, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
         serializer = UserDetailSerializer(token.user)
         return Response({'token': token.key,
