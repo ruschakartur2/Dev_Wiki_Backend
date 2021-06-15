@@ -1,5 +1,6 @@
 import requests
 from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.hashers import make_password
 from django.urls import reverse
 from rest_framework import serializers
 from django.utils.translation import ugettext_lazy as _
@@ -39,12 +40,25 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Serializer to register new user with token"""
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ("id", "email", "password")
+
+    def validate(self, attrs):
+        attrs['password'] = make_password(attrs['password'])
+        return attrs
+
+
 class UserDetailSerializer(serializers.ModelSerializer):
     """Serializer for user profile  """
 
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'email', 'date_joined']
+        fields = ['id', 'email']
 
 
 class TokenSerializer(serializers.ModelSerializer):

@@ -34,7 +34,7 @@ pluggy==0.13.1
 psycopg2==2.8.6
 py==1.10.0
 pycparser==2.20
-PyJWT==2.1.0
+PyJWT~=1.7.1
 pyparsing==2.4.7
 pytest==6.2.4
 pytest-django==4.2.0
@@ -52,3 +52,7 @@ sqlparse==0.4.1
 toml==0.10.2
 uritemplate==3.0.1
 urllib3==1.26.4
+
+pip~=21.1.1
+setuptools~=56.2.0
+django-simple-history~=3.0.0
