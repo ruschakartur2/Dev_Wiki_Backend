@@ -4,8 +4,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
-from users.serializers import UserDetailSerializer, SocialAuthSerializer, \
-    UserRegistrationSerializer, UserLoginSerializer, TokenSerializer
+from api.serializers import users
 from rest_framework.authtoken.models import Token
 
 
@@ -13,7 +12,7 @@ class CreateUserAPIView(generics.CreateAPIView):
     """Create a new user in the system"""
     authentication_classes = ()
     permission_classes = ()
-    serializer_class = UserRegistrationSerializer
+    serializer_class = users.UserRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -31,13 +30,13 @@ class CreateUserAPIView(generics.CreateAPIView):
 
 class UserLoginAPIView(ObtainAuthToken):
     """Create a new auth token for user"""
-    serializer_class = UserLoginSerializer
+    serializer_class = users.UserLoginSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
     def post(self, request, *args, **kwargs):
         response = super(UserLoginAPIView, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
-        serializer = UserDetailSerializer(token.user)
+        serializer = users.UserDetailSerializer(token.user)
         return Response({'token': token.key,
                          'user': serializer.data,
                          })
@@ -45,8 +44,9 @@ class UserLoginAPIView(ObtainAuthToken):
 
 class ManageUserView(generics.RetrieveAPIView):
     """Manage the authenticated user"""
-    serializer_class = UserDetailSerializer
-    authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication,
+    serializer_class = users.UserDetailSerializer
+    authentication_classes = [authentication.TokenAuthentication,
+                              authentication.SessionAuthentication,
                               authentication.BasicAuthentication]
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -56,7 +56,7 @@ class ManageUserView(generics.RetrieveAPIView):
 
 
 class SocialAuthView(generics.CreateAPIView):
-    serializer_class = SocialAuthSerializer
+    serializer_class = users.SocialAuthSerializer
     permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):

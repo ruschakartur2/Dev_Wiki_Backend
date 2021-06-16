@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from article import models
-from users.serializers import UserDetailSerializer
+
+from api.models import Article
+from api.serializers import users
 
 
 class HistoricalRecordField(serializers.ListField):
@@ -15,9 +16,9 @@ class ArticleSerializer(serializers.ModelSerializer):
     history = HistoricalRecordField(read_only=True)
 
     class Meta:
-        model = models.Article
+        model = Article
         fields = ['id', 'title', 'created_at', 'author', 'body', 'history', ]
 
     def to_representation(self, instance):
-        self.fields['author'] = UserDetailSerializer(read_only=True)
+        self.fields['author'] = users.UserDetailSerializer(read_only=True)
         return super(ArticleSerializer, self).to_representation(instance)

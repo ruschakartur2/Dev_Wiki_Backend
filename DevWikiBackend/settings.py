@@ -42,8 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'users',
-    'article',
+    'api',
 
     'django_filters',
     'corsheaders',
@@ -137,7 +136,7 @@ REST_FRAMEWORK = {
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'api.User'
 SITE_ID = 1
 
 AUTH_PASSWORD_VALIDATORS = [

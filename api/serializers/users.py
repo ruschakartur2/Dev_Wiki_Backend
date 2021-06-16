@@ -7,7 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
 from social_core.exceptions import MissingBackend
 from social_django.utils import load_strategy, load_backend
-from social_django.views import NAMESPACE
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

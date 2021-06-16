@@ -1,12 +1,7 @@
-from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
-from django.contrib.auth.models import AbstractUser, PermissionsMixin
-from django.utils.translation import ugettext_lazy as _
-from django.db import models
+from django.contrib.auth.base_user import BaseUserManager
 
 
-# Create your models here.
-
-class CustomUserManager(BaseUserManager):
+class UserManager(BaseUserManager):
     """Custom user model manager where email is the unique"""
 
     def create_user(self, email, password=None, **extra_fields):
@@ -31,15 +26,3 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
         return self.create_user(email, password, **extra_fields)
-
-
-class CustomUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_('email address'), unique=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-
-    objects = CustomUserManager()
-    USERNAME_FIELD = 'email'
-
-    def __str__(self):
-        return self.email
