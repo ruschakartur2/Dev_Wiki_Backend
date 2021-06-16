@@ -1,13 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.db import models
-
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
 from api.managers.users import UserManager
-from simple_history.models import HistoricalRecords
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -32,7 +28,6 @@ class Article(models.Model):
     created_at = models.DateTimeField(verbose_name=_('Created time'), auto_now=True)
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     body = models.TextField(verbose_name=_('Body'))
-    history = HistoricalRecords()
 
     def __str__(self):
         return self.title
