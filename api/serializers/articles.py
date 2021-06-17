@@ -13,12 +13,17 @@ class HistoricalRecordField(serializers.ListField):
 
 class ArticleSerializer(serializers.ModelSerializer):
     """Serializer to create/update/delete article"""
-    history = HistoricalRecordField(read_only=True)
+
+    previous_version = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
-        fields = ['id', 'title', 'created_at', 'author', 'body', 'history', ]
+        fields = ['id', 'title', 'created_at', 'previous_version', 'body', ]
 
     def to_representation(self, instance):
         self.fields['author'] = users.UserDetailSerializer(read_only=True)
         return super(ArticleSerializer, self).to_representation(instance)
+
+    def get_previous_version(self,obj):
+        h = obj.previous_version.all().values('id','title', 'body', 'created_at')[2]
+        return h
