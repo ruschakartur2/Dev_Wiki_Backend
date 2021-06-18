@@ -20,7 +20,7 @@ article_detail = articles.ArticleViewSet.as_view({
 
 urlpatterns = [
         path('articles/', article_list, name='article_list'),
-        path('articles/<int:pk>/', article_detail, name='article_detail'),
+        path('articles/<slug>/', article_detail, name='article_detail'),
 
         path('accounts/create/', CreateUserAPIView.as_view(), name='create'),
         path('accounts/login/', UserLoginAPIView.as_view(), name='login'),

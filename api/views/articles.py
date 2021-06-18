@@ -1,4 +1,5 @@
 from rest_framework import viewsets, filters, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from api.models import Article
@@ -16,7 +17,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
                                     'delete': [IsAuthenticated], }
     queryset = Article.objects.all()
     filter_backends = [filters.SearchFilter]
+    pagination_class = PageNumberPagination
     search_fields = ['title']
+    try:
+        lookup_field = 'slug'
+    except:
+        lookup_field = 'pk'
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

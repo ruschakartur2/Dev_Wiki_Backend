@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
+from django_extensions.db.fields import AutoSlugField, RandomCharField
 from simple_history.models import HistoricalRecords
 
 from api.managers.users import UserManager
@@ -30,6 +31,9 @@ class Article(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     body = models.TextField(verbose_name=_('Body'))
     previous_version = HistoricalRecords()
+    slug = RandomCharField(length=4, include_alpha=False, unique=True)
 
     def __str__(self):
         return self.title
+
+
