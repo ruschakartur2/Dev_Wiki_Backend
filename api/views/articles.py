@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
@@ -7,7 +7,7 @@ from api.serializers.articles import ArticleSerializer
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    """Viewset to article model"""
+    """View set to article model"""
     serializer_class = ArticleSerializer
     permission_classes_by_action = {'create': [IsAuthenticated],
                                     'list': [AllowAny, ],

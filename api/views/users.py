@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from rest_framework import generics, authentication, permissions, status
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
@@ -9,12 +8,13 @@ from rest_framework.authtoken.models import Token
 
 
 class CreateUserAPIView(generics.CreateAPIView):
-    """Create a new user in the system"""
+    """View to create a new user in the system"""
     authentication_classes = ()
     permission_classes = ()
     serializer_class = users.UserRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
+        """Create and serialize new user and user's token"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -29,11 +29,12 @@ class CreateUserAPIView(generics.CreateAPIView):
 
 
 class UserLoginAPIView(ObtainAuthToken):
-    """Create a new auth token for user"""
+    """View to login user in system"""
     serializer_class = users.UserLoginSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
     def post(self, request, *args, **kwargs):
+        """Function to authenticate user and return user's data and user's token """
         response = super(UserLoginAPIView, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
         serializer = users.UserDetailSerializer(token.user)
@@ -43,7 +44,7 @@ class UserLoginAPIView(ObtainAuthToken):
 
 
 class ManageUserView(generics.RetrieveAPIView):
-    """Manage the authenticated user"""
+    """View to user profile system"""
     serializer_class = users.UserDetailSerializer
     authentication_classes = [authentication.TokenAuthentication,
                               authentication.SessionAuthentication,
@@ -56,6 +57,7 @@ class ManageUserView(generics.RetrieveAPIView):
 
 
 class SocialAuthView(generics.CreateAPIView):
+    """View to authentication user with github"""
     serializer_class = users.SocialAuthSerializer
     permission_classes = (permissions.AllowAny,)
 

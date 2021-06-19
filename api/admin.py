@@ -1,7 +1,5 @@
 from django.contrib import admin
+from api import models
 
-# Register your models here.
-from api.models import User, Article
-
-admin.site.register(User)
-admin.site.register(Article)
+admin.site.register(models.User)
+admin.site.register(models.Article)

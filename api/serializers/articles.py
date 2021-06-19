@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from rest_framework.fields import SlugField
 
 from api.models import Article
 from api.serializers import users
 
 
 class HistoricalRecordField(serializers.ListField):
+    """Serializer to get article history"""
     child = serializers.DictField()
 
     def to_representation(self, data):
@@ -27,7 +27,8 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
         return super(ArticleSerializer, self).to_representation(instance)
 
     def get_previous_version(self, obj):
-        if len(obj.previous_version.all())>1:
-            h = obj.previous_version.all().values('id', 'title', 'body', 'created_at')[1]
+        """Function to get previous Article version if that exist"""
+        if len(obj.previous_version.all()) > 1:
+            h = obj.previous_version.all().values('id', 'title', 'body', 'created_at','author')[1]
             return h
         return []

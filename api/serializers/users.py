@@ -37,6 +37,7 @@ class UserLoginSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         def __init__(self, *args, **kwargs):
+            """Initialize serializer"""
             super(UserLoginSerializer, self).__init__(*args, **kwargs)
             self.user = None
 
@@ -46,6 +47,7 @@ class UserLoginSerializer(serializers.Serializer):
             password=password
         )
         if not self.user:
+            """Statement to check result of authenticate"""
             msg = _('Unable to authenticate with provided credentials')
             raise serializers.ValidationError(msg, code='authentication')
         attrs['user'] = self.user
@@ -54,13 +56,13 @@ class UserLoginSerializer(serializers.Serializer):
 
 class UserDetailSerializer(serializers.ModelSerializer):
     """Serializer for user profile  """
-
     class Meta:
         model = get_user_model()
         fields = ['id', 'email', 'is_active']
 
 
 class TokenSerializer(serializers.ModelSerializer):
+    """Serializer to authentication token"""
     auth_token = serializers.CharField(source='key')
 
     class Meta:
@@ -69,6 +71,7 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class SocialAuthSerializer(serializers.Serializer):
+    """Serializer to authentication user with github"""
     access_token = serializers.CharField()
     provider = serializers.CharField()
 
@@ -77,10 +80,12 @@ class SocialAuthSerializer(serializers.Serializer):
     }
 
     def __init__(self, *args, **kwargs):
+        """Initialize serializer"""
         self.user = None
         super(SocialAuthSerializer, self).__init__(*args, **kwargs)
 
     def validate(self, attrs):
+        """Validate and authenticate user with OAuth providers"""
         provider = attrs.get('provider')
         access_token = attrs.get('access_token')
         strategy = load_strategy(request=self.context['request'])
