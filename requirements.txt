@@ -54,4 +54,5 @@ social-auth-core==4.1.0
 sqlparse==0.4.1
 toml==0.10.2
 uritemplate==3.0.1
+django_extensions
 urllib3==1.26.4
