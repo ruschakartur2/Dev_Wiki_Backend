@@ -5,9 +5,6 @@ name: Python application
 
 on:
   push:
-    branches: [ master,v1 ]
-    paths-ignore:
-      - 'DevWikiBackend/.env'
   pull_request:
     branches: [ master ]
     paths-ignore:
@@ -44,9 +41,7 @@ jobs:
          python -m pip install --upgrade pip
          pip install -r requirements.txt
     - name: Make migrations
-      run: |
-        python manage.py makemigrations 
-        python manage.py makemigrations users
+      run: python manage.py makemigrations 
     - name: Run migrations
       run: python manage.py migrate
 

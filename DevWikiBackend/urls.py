@@ -1,7 +1,9 @@
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
+
 from django.urls import  include
+
 from rest_framework_swagger.views import get_swagger_view
 
 from DevWikiBackend import settings
