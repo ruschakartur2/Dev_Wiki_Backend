@@ -1,9 +1,13 @@
 from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
+from django.db.models import F
+
 
 from api.models import Article
-from api.serializers.articles import ArticleSerializer
+from api.serializers.articles import ArticleSerializer, ArticleListSerializer
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
@@ -27,6 +31,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ArticleListSerializer
+        if self.action == 'retrieve':
+            return ArticleSerializer
+
     def get_permissions(self):
         try:
             # return permission_classes depending on `action`
@@ -34,3 +44,4 @@ class ArticleViewSet(viewsets.ModelViewSet):
         except KeyError:
             # action is not set return default permission_classes
             return [permission() for permission in self.permission_classes]
+

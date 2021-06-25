@@ -40,6 +40,6 @@ class Article(models.Model):
                            verbose_name=_("Article's slug field to url search"))
 
     def __str__(self):
+        """Function to naming model"""
         return self.title
-
 
