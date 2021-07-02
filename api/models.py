@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
+from django.utils import timezone
 from django_extensions.db.fields import RandomCharField
 from simple_history.models import HistoricalRecords
 
@@ -43,3 +44,29 @@ class Article(models.Model):
         """Function to naming model"""
         return self.title
 
+
+class Comment(models.Model):
+    article = models.ForeignKey(Article,
+                                verbose_name=_("Comment to article"),
+                                related_name='comments',
+                                on_delete=models.CASCADE)
+    content = models.TextField(verbose_name=_("Comment's text"))
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        verbose_name=_("Comment's author"),
+    )
+    reply = models.ForeignKey('self',
+                              blank=True,
+                              on_delete=models.CASCADE,
+                              null=True,
+                              related_name='replies',
+                              verbose_name=_("Reply to comment"))
+    date_posted = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return 'Comment to {}'.format(self.article.title)
+
+    @property
+    def owner(self):
+        return self.author

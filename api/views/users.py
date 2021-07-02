@@ -56,6 +56,7 @@ class ManageUserView(generics.RetrieveAPIView):
         return self.request.user
 
 
+
 class SocialAuthView(generics.CreateAPIView):
     """View to authentication user with github"""
     serializer_class = users.SocialAuthSerializer

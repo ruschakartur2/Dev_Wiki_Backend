@@ -12,7 +12,18 @@ class HistoricalRecordField(serializers.ListField):
         return super().to_representation(data.values())
 
 
-class ArticleSerializer(serializers.HyperlinkedModelSerializer):
+class ArticlePublicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = ['id','slug', 'title', 'created_at', 'body']
+
+    def to_representation(self, instance):
+        """Function to show author data"""
+        self.fields['author'] = users.UserDetailSerializer(read_only=True)
+        return super(ArticlePublicSerializer, self).to_representation(instance)
+
+
+class ArticleSerializer(serializers.ModelSerializer):
     """Serializer to create/update/delete article"""
 
     previous_version = serializers.SerializerMethodField()
@@ -29,13 +40,13 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_previous_version(self, obj):
         """Function to get previous Article version if that exist"""
-        if len(obj.previous_version.all()) > 1:
+        if (len(obj.previous_version.all()) > 1) and (obj.author.id == self.context['request'].user.id):
             h = obj.previous_version.all().values('id', 'title', 'body', 'created_at', 'author')[1]
             return h
-        return []
+        return None
 
 
-class ArticleListSerializer(serializers.HyperlinkedModelSerializer):
+class ArticleListSerializer(serializers.ModelSerializer):
     body = serializers.SerializerMethodField()
 
     class Meta:
