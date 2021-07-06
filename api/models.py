@@ -56,16 +56,16 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("Comment's author"),
     )
-    reply = models.ForeignKey('self',
-                              blank=True,
-                              on_delete=models.CASCADE,
-                              null=True,
-                              related_name='replies',
-                              verbose_name=_("Reply to comment"))
+    parent = models.ForeignKey('self',
+                               blank=True,
+                               on_delete=models.SET_NULL,
+                               null=True,
+                               related_name='children',
+                               verbose_name=_("Reply to comment"))
     date_posted = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return 'Comment to {}'.format(self.article.title)
+        return 'Comment {}'.format(self.content)
 
     @property
     def owner(self):
