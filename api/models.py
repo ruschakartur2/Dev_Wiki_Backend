@@ -10,6 +10,13 @@ from api.managers import users
 from django.utils.translation import ugettext_lazy as _
 
 
+class Tag(models.Model):
+    title = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_("User's email address"), max_length=255, unique=True)
     is_active = models.BooleanField(verbose_name=_("User's status (online/offline)"), default=True)
@@ -34,11 +41,13 @@ class Article(models.Model):
                                verbose_name=_("Article's author"),
                                on_delete=models.CASCADE)
     body = models.TextField(verbose_name=_('Body'))
-    previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
     slug = RandomCharField(length=4,
                            include_alpha=False,
                            unique=True,
                            verbose_name=_("Article's slug field to url search"))
+    tags = models.ManyToManyField(Tag, related_name='articles')
+    previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
+    visits = models.IntegerField(default=0)
 
     def __str__(self):
         """Function to naming model"""
@@ -58,7 +67,7 @@ class Comment(models.Model):
     )
     parent = models.ForeignKey('self',
                                blank=True,
-                               on_delete=models.SET_NULL,
+                               on_delete=models.CASCADE,
                                null=True,
                                related_name='children',
                                verbose_name=_("Reply to comment"))

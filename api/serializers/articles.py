@@ -1,21 +1,25 @@
 from rest_framework import serializers
 
-from api.models import Article
+from api.models import Article, Tag
 from api.serializers import users
 
 
 class HistoricalRecordField(serializers.ListField):
     """Serializer to get article history"""
     child = serializers.DictField()
+    tags = serializers.SlugRelatedField(many=True, queryset=Tag.objects.all(), slug_field='title')
 
     def to_representation(self, data):
         return super().to_representation(data.values())
 
 
 class ArticlePublicSerializer(serializers.ModelSerializer):
+    """Serializer to CRUD Articles if not author"""
+    tags = serializers.SlugRelatedField(many=True, queryset=Tag.objects.all(), slug_field='title')
+
     class Meta:
         model = Article
-        fields = ['id','slug', 'title', 'created_at', 'body']
+        fields = ['id', 'slug', 'title', 'created_at', 'body', 'tags', 'visits']
 
     def to_representation(self, instance):
         """Function to show author data"""
@@ -23,20 +27,14 @@ class ArticlePublicSerializer(serializers.ModelSerializer):
         return super(ArticlePublicSerializer, self).to_representation(instance)
 
 
-class ArticleSerializer(serializers.ModelSerializer):
+class ArticleSerializer(ArticlePublicSerializer):
     """Serializer to create/update/delete article"""
-
     previous_version = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
-        fields = ['id', 'slug', 'title', 'created_at', 'previous_version', 'body', ]
+        fields = ArticlePublicSerializer.Meta.fields + ['previous_version']
         lookup_field = 'slug'
-
-    def to_representation(self, instance):
-        """Function to show author data"""
-        self.fields['author'] = users.UserDetailSerializer(read_only=True)
-        return super(ArticleSerializer, self).to_representation(instance)
 
     def get_previous_version(self, obj):
         """Function to get previous Article version if that exist"""
@@ -46,18 +44,14 @@ class ArticleSerializer(serializers.ModelSerializer):
         return None
 
 
-class ArticleListSerializer(serializers.ModelSerializer):
+class ArticleListSerializer(ArticlePublicSerializer):
+    """Serializer to get short body field"""
     body = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
-        fields = ['id', 'slug', 'title', 'created_at', 'body', ]
+        fields = ArticlePublicSerializer.Meta.fields + ['body', ]
         lookup_field = 'slug'
-
-    def to_representation(self, instance):
-        """Function to show author data"""
-        self.fields['author'] = users.UserDetailSerializer(read_only=True)
-        return super(ArticleListSerializer, self).to_representation(instance)
 
     def get_body(self, obj):
         return obj.body[:255]

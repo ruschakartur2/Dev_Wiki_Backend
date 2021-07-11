@@ -1,8 +1,9 @@
+import django_filters.rest_framework
+from django.db.models import F
 from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
-
-
+from rest_framework.response import Response
 
 from api.models import Article
 from api.permissions import IsOwnerOrReadOnly
@@ -18,10 +19,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
                                     'partial_update': [IsOwnerOrReadOnly],
                                     'retrieve': [AllowAny],
                                     'delete': [IsAuthenticated], }
-    queryset = Article.objects.all()
-    filter_backends = [filters.SearchFilter]
+    queryset = Article.objects.all().order_by('-id')
+    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
     pagination_class = PageNumberPagination
     search_fields = ['title']
+    filterset_fields = ['tags__title']
     try:
         lookup_field = 'slug'
     except:
@@ -30,10 +32,18 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        Article.objects.filter(pk=instance.id).update(visits=F('visits') + 1)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
     def get_serializer_class(self):
         if self.action == 'list':
             return ArticleListSerializer
         if self.action == 'retrieve' and self.request.user == self.get_object().author:
+            return ArticleSerializer
+        if self.action == 'partial_update' and self.request.user == self.get_object().author:
             return ArticleSerializer
         return ArticlePublicSerializer
 
@@ -44,4 +54,3 @@ class ArticleViewSet(viewsets.ModelViewSet):
         except KeyError:
             # action is not set return default permission_classes
             return [permission() for permission in self.permission_classes]
-
