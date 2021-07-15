@@ -19,11 +19,10 @@ class ArticleViewSet(viewsets.ModelViewSet):
                                     'partial_update': [IsOwnerOrReadOnly],
                                     'retrieve': [AllowAny],
                                     'delete': [IsAuthenticated], }
-    queryset = Article.objects.all().order_by('-id')
     filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
     pagination_class = PageNumberPagination
     search_fields = ['title']
-    filterset_fields = ['tags__title']
+    filterset_fields = ['tags__title', 'author__id']
     try:
         lookup_field = 'slug'
     except:
@@ -46,6 +45,16 @@ class ArticleViewSet(viewsets.ModelViewSet):
         if self.action == 'partial_update' and self.request.user == self.get_object().author:
             return ArticleSerializer
         return ArticlePublicSerializer
+
+    def get_queryset(self):
+        queryset = Article.objects.all()
+        newest = self.request.query_params.get('new')
+        popular = self.request.query_params.get('popular')
+        if newest == 'get':
+            queryset = queryset.order_by('-id')
+        if popular == 'get':
+            queryset = queryset.order_by('-visits')
+        return queryset
 
     def get_permissions(self):
         try:

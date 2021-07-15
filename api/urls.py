@@ -8,11 +8,11 @@ from api.views import comments
 from api.views import tags
 from api.views.users import SocialAuthView, ManageUserView, UserLoginAPIView, CreateUserAPIView
 
-article_list = articles.ArticleViewSet.as_view({
+main_article_list = articles.ArticleViewSet.as_view({
     'get': 'list',
     'post': 'create'
 })
-article_detail = articles.ArticleViewSet.as_view({
+main_article_detail = articles.ArticleViewSet.as_view({
     'get': 'retrieve',
     'put': 'update',
     'patch': 'partial_update',
@@ -42,8 +42,8 @@ tag_detail = tags.TagViewSet.as_view({
     'delete': 'destroy'
 })
 urlpatterns = [
-        path(r'articles/', article_list, name='article_list'),
-        path(r'articles/<slug>/', article_detail, name='article_detail'),
+        path(r'articles/', main_article_list, name='article_list'),
+        path(r'articles/<slug>/', main_article_detail, name='article_detail'),
 
         path(r'comments/', comment_list, name='comment_list'),
         path(r'comments/<id>/', comment_detail, name='comment_detail'),
