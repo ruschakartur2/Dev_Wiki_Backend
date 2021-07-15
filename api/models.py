@@ -2,11 +2,19 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
+from django.utils import timezone
 from django_extensions.db.fields import RandomCharField
 from simple_history.models import HistoricalRecords
 
 from api.managers import users
 from django.utils.translation import ugettext_lazy as _
+
+
+class Tag(models.Model):
+    title = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -33,13 +41,41 @@ class Article(models.Model):
                                verbose_name=_("Article's author"),
                                on_delete=models.CASCADE)
     body = models.TextField(verbose_name=_('Body'))
-    previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
     slug = RandomCharField(length=4,
                            include_alpha=False,
                            unique=True,
                            verbose_name=_("Article's slug field to url search"))
+    tags = models.ManyToManyField(Tag, related_name='articles')
+    previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
+    visits = models.IntegerField(default=0)
 
     def __str__(self):
+        """Function to naming model"""
         return self.title
 
 
+class Comment(models.Model):
+    article = models.ForeignKey(Article,
+                                verbose_name=_("Comment to article"),
+                                related_name='comments',
+                                on_delete=models.CASCADE)
+    content = models.TextField(verbose_name=_("Comment's text"))
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        verbose_name=_("Comment's author"),
+    )
+    parent = models.ForeignKey('self',
+                               blank=True,
+                               on_delete=models.CASCADE,
+                               null=True,
+                               related_name='children',
+                               verbose_name=_("Reply to comment"))
+    date_posted = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return 'Comment {}'.format(self.content)
+
+    @property
+    def owner(self):
+        return self.author
