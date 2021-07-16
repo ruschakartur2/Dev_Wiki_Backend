@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from api.models import Article, Tag
 from api.serializers import users
+from api.serializers.tags import TagsSerializer
 
 
 class HistoricalRecordField(serializers.ListField):
@@ -15,11 +16,33 @@ class HistoricalRecordField(serializers.ListField):
 
 class ArticlePublicSerializer(serializers.ModelSerializer):
     """Serializer to CRUD Articles if not author"""
-    tags = serializers.SlugRelatedField(many=True, queryset=Tag.objects.all(), slug_field='title')
+    tags = serializers.SlugRelatedField(many=True, slug_field='title', read_only=True)
+    update_tags = serializers.ListField(
+        child=serializers.CharField(max_length=30), write_only=True)
 
     class Meta:
         model = Article
-        fields = ['id', 'slug', 'title', 'created_at', 'body', 'tags', 'visits']
+        fields = ['id', 'slug', 'title', 'created_at', 'body', 'tags', 'visits', 'update_tags']
+
+    def create(self, validated_data):
+        tag_names = validated_data.pop('update_tags')
+        instance = super().create(validated_data)
+        tags = []
+        for title in tag_names:
+            tag, created = Tag.objects.get_or_create(title=title)
+            tags.append(tag)
+        instance.tags.set(tags)
+        return instance
+
+    def update(self, instance, validated_data):
+        tag_names = validated_data.pop('update_tags')
+        instance = super().update(instance, validated_data)
+        tags = []
+        for title in tag_names:
+            tag, created = Tag.objects.get_or_create(title=title)
+            tags.append(tag)
+        instance.tags.set(tags)
+        return instance
 
     def to_representation(self, instance):
         """Function to show author data"""
