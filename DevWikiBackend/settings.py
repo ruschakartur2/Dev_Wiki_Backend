@@ -27,7 +27,7 @@ SECRET_KEY = env.str('SECRET_KEY')
 DEBUG = env.bool('debug')
 
 ALLOWED_HOSTS = '*'
-AUTH_USER_MODEL = 'api.User'
+AUTH_USER_MODEL = 'core.User'
 SITE_ID = 1
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'api',
+    'core',
 
     'django_filters',
     'corsheaders',

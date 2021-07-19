@@ -6,7 +6,8 @@ from django.utils import timezone
 from django_extensions.db.fields import RandomCharField
 from simple_history.models import HistoricalRecords
 
-from api.managers import users
+from DevWikiBackend import settings
+from core.managers import users
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -32,6 +33,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """Function to naming model"""
         return self.email
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=120, blank=False)
+    last_name = models.CharField(max_length=120, blank=False)
+    phone = models.CharField(max_length=120, blank=False)
+
+    def __str__(self):
+        return 'Profile of user: {}'.format(self.user.email)
 
 
 class Article(models.Model):

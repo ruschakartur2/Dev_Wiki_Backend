@@ -2,8 +2,7 @@ from rest_framework import generics, authentication, permissions, status
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-
-from api.serializers import users
+from api.accounts import serializers
 from rest_framework.authtoken.models import Token
 
 
@@ -11,7 +10,7 @@ class CreateUserAPIView(generics.CreateAPIView):
     """View to create a new user in the system"""
     authentication_classes = ()
     permission_classes = ()
-    serializer_class = users.UserRegistrationSerializer
+    serializer_class = serializers.UserRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
         """Create and serialize new user and user's token"""
@@ -30,22 +29,22 @@ class CreateUserAPIView(generics.CreateAPIView):
 
 class UserLoginAPIView(ObtainAuthToken):
     """View to login user in system"""
-    serializer_class = users.UserLoginSerializer
+    serializer_class = serializers.UserLoginSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
     def post(self, request, *args, **kwargs):
         """Function to authenticate user and return user's data and user's token """
         response = super(UserLoginAPIView, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
-        serializer = users.UserDetailSerializer(token.user)
+        user = serializers.UserDetailSerializer(token.user)
         return Response({'token': token.key,
-                         'user': serializer.data,
+                         'user': user.data,
                          })
 
 
 class ManageUserView(generics.RetrieveAPIView):
     """View to user profile system"""
-    serializer_class = users.UserDetailSerializer
+    serializer_class = serializers.UserDetailSerializer
     authentication_classes = [authentication.TokenAuthentication,
                               authentication.SessionAuthentication,
                               authentication.BasicAuthentication]
@@ -56,10 +55,9 @@ class ManageUserView(generics.RetrieveAPIView):
         return self.request.user
 
 
-
 class SocialAuthView(generics.CreateAPIView):
     """View to authentication user with github"""
-    serializer_class = users.SocialAuthSerializer
+    serializer_class = serializers.SocialAuthSerializer
     permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):

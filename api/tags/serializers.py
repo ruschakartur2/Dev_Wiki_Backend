@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-from api.models import Tag
+from core.models import Tag
 
 
 class TagsSerializer(serializers.ModelSerializer):
