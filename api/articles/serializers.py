@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
-from api.models import Article, Tag
-from api.serializers import users
-from api.serializers.tags import TagsSerializer
+from api.accounts.serializers import UserDetailSerializer
+from core.models import Article, Tag
 
 
 class HistoricalRecordField(serializers.ListField):
@@ -46,7 +45,7 @@ class ArticlePublicSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """Function to show author data"""
-        self.fields['author'] = users.UserDetailSerializer(read_only=True)
+        self.fields['author'] = UserDetailSerializer(read_only=True)
         return super(ArticlePublicSerializer, self).to_representation(instance)
 
 

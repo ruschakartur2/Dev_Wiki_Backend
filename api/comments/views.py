@@ -3,10 +3,10 @@ from rest_framework import viewsets, filters, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from api.models import Comment
-from api.paginations import LargeResultsSetPagination
-from api.permissions import IsOwnerOrReadOnly
-from api.serializers.comments import CommentSerializer
+from api.comments.serializers import CommentSerializer
+from core.models import Comment
+from core.paginations import LargeResultsSetPagination
+from core.permissions import IsOwnerOrReadOnly
 
 
 class CommentViewSet(viewsets.ModelViewSet):

@@ -5,9 +5,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from api.models import Article
-from api.permissions import IsOwnerOrReadOnly
-from api.serializers.articles import ArticleSerializer, ArticleListSerializer, ArticlePublicSerializer
+from core.models import Article
+from core.permissions import IsOwnerOrReadOnly
+from api.articles.serializers import ArticleSerializer, ArticleListSerializer, ArticlePublicSerializer
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
