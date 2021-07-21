@@ -22,6 +22,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_("User's email address"), max_length=255, unique=True)
     is_active = models.BooleanField(verbose_name=_("User's status (online/offline)"), default=True)
     is_staff = models.BooleanField(verbose_name=_("User's admin status"), default=False)
+    first_name = models.CharField(verbose_name=_("User's firstname"), max_length=255)
+    last_name = models.CharField(verbose_name=_("User's lastname"), max_length=255)
+    phone = models.CharField(verbose_name=_("User's phone number"), max_length=255)
+    city = models.CharField(verbose_name=_("User's city"), max_length=255)
+    image = models.ImageField(upload_to='user_images')
 
     objects = users.UserManager()
 
@@ -33,16 +38,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """Function to naming model"""
         return self.email
-
-
-class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=120, blank=False)
-    last_name = models.CharField(max_length=120, blank=False)
-    phone = models.CharField(max_length=120, blank=False)
-
-    def __str__(self):
-        return 'Profile of user: {}'.format(self.user.email)
 
 
 class Article(models.Model):
@@ -57,8 +52,8 @@ class Article(models.Model):
                            unique=True,
                            verbose_name=_("Article's slug field to url search"))
     tags = models.ManyToManyField(Tag, related_name='articles')
-    previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
     visits = models.IntegerField(default=0)
+    previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
 
     def __str__(self):
         """Function to naming model"""

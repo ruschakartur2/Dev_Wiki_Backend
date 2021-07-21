@@ -56,9 +56,10 @@ class UserLoginSerializer(serializers.Serializer):
 
 class UserDetailSerializer(serializers.ModelSerializer):
     """Serializer for user profile  """
+
     class Meta:
         model = get_user_model()
-        fields = ['id', 'email', 'is_active']
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone', 'city', 'image', 'is_active']
 
 
 class TokenSerializer(serializers.ModelSerializer):

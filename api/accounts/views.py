@@ -1,4 +1,4 @@
-from rest_framework import generics, authentication, permissions, status
+from rest_framework import generics, authentication, permissions, status, viewsets
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -42,7 +42,7 @@ class UserLoginAPIView(ObtainAuthToken):
                          })
 
 
-class ManageUserView(generics.RetrieveAPIView):
+class ManageUserView(viewsets.ModelViewSet):
     """View to user profile system"""
     serializer_class = serializers.UserDetailSerializer
     authentication_classes = [authentication.TokenAuthentication,

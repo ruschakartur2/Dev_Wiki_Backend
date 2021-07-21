@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_swagger',
+    'drf_yasg',
     'rest_framework_serializer_field_permissions',
     'oauth2_provider',
     'social_django',
@@ -171,8 +171,10 @@ USE_TZ = True
 # Static files
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-VENV_PATH = os.path.dirname(BASE_DIR)
-STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 USE_X_FORWARDED_HOST = True

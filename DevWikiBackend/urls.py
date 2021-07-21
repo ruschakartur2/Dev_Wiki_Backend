@@ -1,17 +1,18 @@
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from django.urls import include
 
-from rest_framework_swagger.views import get_swagger_view
-
 from DevWikiBackend import settings
-
-schema_view = get_swagger_view(title='Pastebin API')
+from .yasg import urlpatterns as doc_urls
 
 urlpatterns = [
-        url(r'docs/', schema_view),
         url(r'admin/', admin.site.urls),
         url(r'api/', include('core.urls'))
-] + static(settings.STATIC_URL)
+]
+urlpatterns += doc_urls
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

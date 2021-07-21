@@ -4,15 +4,6 @@ from api.accounts.serializers import UserDetailSerializer
 from core.models import Article, Tag
 
 
-class HistoricalRecordField(serializers.ListField):
-    """Serializer to get article history"""
-    child = serializers.DictField()
-    tags = serializers.SlugRelatedField(many=True, queryset=Tag.objects.all(), slug_field='title')
-
-    def to_representation(self, data):
-        return super().to_representation(data.values())
-
-
 class ArticlePublicSerializer(serializers.ModelSerializer):
     """Serializer to CRUD Articles if not author"""
     tags = serializers.SlugRelatedField(many=True, slug_field='title', read_only=True)
