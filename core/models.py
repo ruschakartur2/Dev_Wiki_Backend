@@ -41,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Article(models.Model):
-    title = models.CharField(verbose_name=_("Article's title"), max_length=255)
+    title = models.CharField(verbose_name=_("Article's title"), max_length=255, unique=True)
     created_at = models.DateTimeField(verbose_name=_("Article's created time"), auto_now=True)
     author = models.ForeignKey(get_user_model(),
                                verbose_name=_("Article's author"),

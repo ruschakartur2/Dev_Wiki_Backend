@@ -42,7 +42,7 @@ class PublicArticleAPITests(TestCase):
         res = self.client.post(ARTICLE_PUBLIC_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_update_article_without_login(self):
+    def test_update_article_in_public_url(self):
         payload_patch = {
             'title': 'testTitle1',
             'body': 'newBody',
@@ -72,6 +72,7 @@ class PrivateArticleAPITests(TestCase):
             'test@test.com',
             'testtest'
         )
+        self.default_permission_error = 'You do not have permission to perform this action.'
         self.client = APIClient()
         self.client.login(email='test@test.com', password='test@test.com')
         self.client.force_authenticate(self.user)
@@ -84,6 +85,22 @@ class PrivateArticleAPITests(TestCase):
         }
         res = self.client.post(ARTICLE_PUBLIC_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_create_unique_title_article(self):
+        payload = {
+            'title': 'testTitle',
+            'body': 'newBody',
+            'update_tags': 'test'
+        }
+        self.client.post(ARTICLE_PUBLIC_URL, payload)
+        payload2 = {
+            'title': 'testTitle',
+            'body': 'newBody432',
+            'update_tags': 'test534543'
+        }
+        self.assertEqual(payload['title'], payload2['title'])
+        res2 = self.client.post(ARTICLE_PUBLIC_URL, payload2)
+        self.assertEqual(res2.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_article_without_title(self):
         payload = {
@@ -141,3 +158,70 @@ class PrivateArticleAPITests(TestCase):
         self.assertTrue(patch_res.data['title'] != res.data['title'])
         self.assertTrue(payload['title'] != patch_res.data['title'])
         self.assertEqual(res.data['author'], patch_res.data['author'])
+
+    def test_delete_article_success(self):
+        payload = {
+            'title': 'Arturka',
+            'body': 'newBody',
+            'update_tags': 'test'
+        }
+        res = self.client.post(ARTICLE_PUBLIC_URL, payload)
+
+        delete_res = self.client.delete('/api/articles/' + res.data['slug'] + '/')
+        self.assertEqual(delete_res.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_update_article_without_authentication(self):
+        new_article = self.client.post('/api/articles/', {
+            'title': 'testtestMoretest',
+            'body': 'ultratest',
+            'update_tags': 'megaTESTT'
+        })
+        self.assertEqual(new_article.status_code, status.HTTP_201_CREATED)
+        self.client.logout()
+
+        patch_payload = {
+            'title': '123',
+            'body': '321',
+            'update_tags': '231'
+        }
+        patch_res = self.client.patch('/api/articles/' + new_article.data['slug'] + '/', patch_payload)
+        self.assertEqual(patch_res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_article_from_another_user(self):
+        new_user = get_user_model().objects.create_user(
+            email='ruschakartur@gmail.com',
+            password='testtest'
+        )
+        new_article = self.client.post('/api/articles/', {
+            'title': 'testtestMoretest',
+            'body': 'ultratest',
+            'update_tags': 'megaTESTT'
+        })
+        self.assertEqual(new_article.status_code, status.HTTP_201_CREATED)
+        self.client.logout()
+        self.client.force_authenticate(new_user)
+        patch_payload = {
+            'title': '123',
+            'body': '321',
+            'update_tags': '231'
+        }
+        patch_res = self.client.patch('/api/articles/' + new_article.data['slug'] + '/', patch_payload)
+        self.assertEqual(patch_res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(patch_res.data['detail'], self.default_permission_error)
+
+    def test_delete_article_from_another_user(self):
+        new_user = get_user_model().objects.create_user(
+            email='ruschakartur1@gmail.com',
+            password='testtest1'
+        )
+        new_article = self.client.post('/api/articles/', {
+            'title': 'testtestMoretest',
+            'body': 'ultratest',
+            'update_tags': 'megaTESTT'
+        })
+        self.assertEqual(new_article.status_code, status.HTTP_201_CREATED)
+        self.client.logout()
+        self.client.force_authenticate(new_user)
+        delete_res = self.client.delete('/api/articles/' + new_article.data['slug'] + '/')
+        self.assertEqual(delete_res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(delete_res.data['detail'], self.default_permission_error)

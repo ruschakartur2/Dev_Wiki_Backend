@@ -18,7 +18,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
                                     'update': [IsOwnerOrReadOnly, ],
                                     'partial_update': [IsOwnerOrReadOnly],
                                     'retrieve': [AllowAny],
-                                    'delete': [IsAuthenticated], }
+                                    'destroy': [IsOwnerOrReadOnly], }
     filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
     pagination_class = PageNumberPagination
     search_fields = ['title']
