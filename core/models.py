@@ -22,10 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_("User's email address"), max_length=255, unique=True)
     is_active = models.BooleanField(verbose_name=_("User's status (online/offline)"), default=True)
     is_staff = models.BooleanField(verbose_name=_("User's admin status"), default=False)
-    first_name = models.CharField(verbose_name=_("User's firstname"), max_length=255)
-    last_name = models.CharField(verbose_name=_("User's lastname"), max_length=255)
-    phone = models.CharField(verbose_name=_("User's phone number"), max_length=255)
-    city = models.CharField(verbose_name=_("User's city"), max_length=255)
+    nickname = models.CharField(verbose_name=_("User's nickname"), max_length=255)
     image = models.ImageField(upload_to='user_images')
 
     objects = users.UserManager()
