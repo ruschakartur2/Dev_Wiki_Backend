@@ -55,10 +55,22 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    """Serializer for user profile  """
+    """Serializer for user detail  """
+
     class Meta:
         model = get_user_model()
-        fields = ['id', 'email', 'is_active']
+        fields = ['id', 'email']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    """Serializer for user profile"""
+
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'email', 'password', 'nickname', 'is_active', 'image']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
 
 class TokenSerializer(serializers.ModelSerializer):

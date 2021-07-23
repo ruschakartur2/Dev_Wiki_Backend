@@ -22,6 +22,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_("User's email address"), max_length=255, unique=True)
     is_active = models.BooleanField(verbose_name=_("User's status (online/offline)"), default=True)
     is_staff = models.BooleanField(verbose_name=_("User's admin status"), default=False)
+    nickname = models.CharField(verbose_name=_("User's nickname"), max_length=255)
+    image = models.ImageField(upload_to='user_images')
 
     objects = users.UserManager()
 
@@ -35,18 +37,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=120, blank=False)
-    last_name = models.CharField(max_length=120, blank=False)
-    phone = models.CharField(max_length=120, blank=False)
-
-    def __str__(self):
-        return 'Profile of user: {}'.format(self.user.email)
-
-
 class Article(models.Model):
-    title = models.CharField(verbose_name=_("Article's title"), max_length=255)
+    title = models.CharField(verbose_name=_("Article's title"), max_length=255, unique=True)
     created_at = models.DateTimeField(verbose_name=_("Article's created time"), auto_now=True)
     author = models.ForeignKey(get_user_model(),
                                verbose_name=_("Article's author"),
@@ -57,8 +49,8 @@ class Article(models.Model):
                            unique=True,
                            verbose_name=_("Article's slug field to url search"))
     tags = models.ManyToManyField(Tag, related_name='articles')
-    previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
     visits = models.IntegerField(default=0)
+    previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
 
     def __str__(self):
         """Function to naming model"""

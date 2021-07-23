@@ -12,6 +12,10 @@ class RecursiveSerializer(WritableNestedModelSerializer, serializers.Serializer)
         serializer = self.parent.parent.__class__(instance, context=self.context)
         return serializer.data
 
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
 
 class CommentSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
     """Comment serializer with nested childrens"""

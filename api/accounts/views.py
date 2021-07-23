@@ -1,4 +1,5 @@
-from rest_framework import generics, authentication, permissions, status
+from django.contrib.auth import get_user_model
+from rest_framework import generics, authentication, permissions, status, viewsets
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -37,12 +38,14 @@ class UserLoginAPIView(ObtainAuthToken):
         response = super(UserLoginAPIView, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
         user = serializers.UserDetailSerializer(token.user)
+        profile = serializers.ProfileSerializer(token.user)
         return Response({'token': token.key,
                          'user': user.data,
+                         'profile': profile.data,
                          })
 
 
-class ManageUserView(generics.RetrieveAPIView):
+class ManageUserView(viewsets.ModelViewSet):
     """View to user profile system"""
     serializer_class = serializers.UserDetailSerializer
     authentication_classes = [authentication.TokenAuthentication,
@@ -53,6 +56,16 @@ class ManageUserView(generics.RetrieveAPIView):
     def get_object(self):
         """Retrieve and return authenticated user"""
         return self.request.user
+
+
+class ProfileView(viewsets.ModelViewSet):
+    serializer_class = serializers.ProfileSerializer
+    authentication_classes = [authentication.TokenAuthentication,
+                              authentication.SessionAuthentication,
+                              authentication.BasicAuthentication]
+
+    def get_queryset(self):
+        return get_user_model().objects.all()
 
 
 class SocialAuthView(generics.CreateAPIView):
