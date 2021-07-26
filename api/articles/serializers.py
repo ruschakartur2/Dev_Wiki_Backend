@@ -13,6 +13,11 @@ class ArticlePublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = ['id', 'slug', 'title', 'created_at', 'body', 'tags', 'visits', 'update_tags']
+        extra_kwargs = {
+            'update_tags': {
+                'allow_empty': False
+            }
+        }
 
     def create(self, validated_data):
         tag_names = validated_data.pop('update_tags')

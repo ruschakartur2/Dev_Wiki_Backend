@@ -18,8 +18,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     filterset_fields = ['article']
     permission_classes_by_action = {'create': [IsAuthenticated],
                                     'list': [AllowAny],
-                                    'update': [AllowAny],
-                                    'partial_update': [AllowAny],
+                                    'update': [IsOwnerOrReadOnly],
+                                    'partial_update': [IsOwnerOrReadOnly],
                                     'retrieve': [AllowAny, IsOwnerOrReadOnly],
                                     'destroy': [IsOwnerOrReadOnly], }
 

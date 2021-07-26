@@ -16,5 +16,5 @@ tag_detail = views.TagViewSet.as_view({
 
 urlpatterns = [
     path(r'', tag_list, name='tag_list'),
-    path(r'<id>/', tag_detail, name='tag_detail'),
+    path(r'<pk>/', tag_detail, name='tag_detail'),
 ]

@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils import timezone
 from django_extensions.db.fields import RandomCharField
@@ -11,11 +12,6 @@ from core.managers import users
 from django.utils.translation import ugettext_lazy as _
 
 
-class Tag(models.Model):
-    title = models.CharField(max_length=64, unique=True)
-
-    def __str__(self):
-        return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -23,7 +19,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(verbose_name=_("User's status (online/offline)"), default=True)
     is_staff = models.BooleanField(verbose_name=_("User's admin status"), default=False)
     nickname = models.CharField(verbose_name=_("User's nickname"), max_length=255)
-    image = models.ImageField(upload_to='user_images')
+    image = models.ImageField(upload_to='user_images', blank=True, null=True)
 
     objects = users.UserManager()
 
@@ -37,8 +33,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+class Tag(models.Model):
+    title = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
+
 class Article(models.Model):
-    title = models.CharField(verbose_name=_("Article's title"), max_length=255, unique=True)
+    title = models.CharField(verbose_name=_("Article's title"),
+                             max_length=255,
+                             validators=[MinLengthValidator(1)])
     created_at = models.DateTimeField(verbose_name=_("Article's created time"), auto_now=True)
     author = models.ForeignKey(get_user_model(),
                                verbose_name=_("Article's author"),
@@ -52,6 +56,11 @@ class Article(models.Model):
     visits = models.IntegerField(default=0)
     previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.title == '':
+            raise ValidationError('Empty error message')
+
     def __str__(self):
         """Function to naming model"""
         return self.title
@@ -62,7 +71,7 @@ class Comment(models.Model):
                                 verbose_name=_("Comment to article"),
                                 related_name='comments',
                                 on_delete=models.CASCADE)
-    content = models.TextField(verbose_name=_("Comment's text"))
+    content = models.TextField(verbose_name=_("Comment's text"), blank=False, null=False)
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
