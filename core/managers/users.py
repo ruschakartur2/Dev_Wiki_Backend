@@ -8,6 +8,10 @@ class UserManager(BaseUserManager):
         """Create and save a User with the given email and password"""
         if not email:
             raise ValueError('The email is required')
+        if not password:
+            raise ValueError('User must have a Password set')
+        if password.length < 8:
+            raise ValueError('Password must be more than 8 symbols')
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         user.save()
