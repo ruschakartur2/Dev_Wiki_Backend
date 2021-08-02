@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework_serializer_field_permissions',
     'oauth2_provider',
+    'rest_social_auth',  # this package
     'social_django',
     'simple_history',
 
@@ -125,6 +126,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+        'social_core.backends.github.GithubOAuth2',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
         'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
@@ -135,7 +137,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

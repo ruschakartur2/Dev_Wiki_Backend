@@ -1,32 +1,30 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.core.validators import MinLengthValidator, EmailValidator
 from django.db import models
 from django.utils import timezone
 from django_extensions.db.fields import RandomCharField
 from simple_history.models import HistoricalRecords
+from django.core.validators import RegexValidator
 
-from DevWikiBackend import settings
 from core.managers import users
 from django.utils.translation import ugettext_lazy as _
 
-
-class Tag(models.Model):
-    title = models.CharField(max_length=64, unique=True)
-
-    def __str__(self):
-        return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
+alphavalidator = RegexValidator(r'[A-Za-zwА-Яа-яІіЄєЇї]+$', 'That field can contain only letters')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(verbose_name=_("User's email address"), max_length=255, unique=True)
+    email = models.EmailField(verbose_name=_("User's email address"),
+                              max_length=255,
+                              unique=True)
     is_active = models.BooleanField(verbose_name=_("User's status (online/offline)"), default=True)
     is_staff = models.BooleanField(verbose_name=_("User's admin status"), default=False)
-    first_name = models.CharField(verbose_name=_("User's firstname"), max_length=255)
-    last_name = models.CharField(verbose_name=_("User's lastname"), max_length=255)
-    phone = models.CharField(verbose_name=_("User's phone number"), max_length=255)
-    city = models.CharField(verbose_name=_("User's city"), max_length=255)
-    image = models.ImageField(upload_to='user_images')
+    nickname = models.CharField(verbose_name=_("User's nickname"),
+                                max_length=255,
+                                blank=True,
+                                null=True)
+    image = models.ImageField(upload_to='user_images', blank=True, null=True)
 
     objects = users.UserManager()
 
@@ -40,8 +38,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+class Tag(models.Model):
+    title = models.CharField(max_length=64, unique=True, validators=[alphavalidator])
+
+    def __str__(self):
+        return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
+
+
 class Article(models.Model):
-    title = models.CharField(verbose_name=_("Article's title"), max_length=255, unique=True)
+    title = models.CharField(verbose_name=_("Article's title"),
+                             max_length=255,
+                             validators=[MinLengthValidator(1), alphavalidator])
     created_at = models.DateTimeField(verbose_name=_("Article's created time"), auto_now=True)
     author = models.ForeignKey(get_user_model(),
                                verbose_name=_("Article's author"),
@@ -51,9 +58,15 @@ class Article(models.Model):
                            include_alpha=False,
                            unique=True,
                            verbose_name=_("Article's slug field to url search"))
-    tags = models.ManyToManyField(Tag, related_name='articles')
+    tags = models.ManyToManyField(Tag,
+                                  related_name='articles', )
     visits = models.IntegerField(default=0)
     previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.title == '':
+            raise ValidationError('Empty error message')
 
     def __str__(self):
         """Function to naming model"""
@@ -65,7 +78,7 @@ class Comment(models.Model):
                                 verbose_name=_("Comment to article"),
                                 related_name='comments',
                                 on_delete=models.CASCADE)
-    content = models.TextField(verbose_name=_("Comment's text"))
+    content = models.TextField(verbose_name=_("Comment's text"), blank=False, null=False)
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,

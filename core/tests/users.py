@@ -116,7 +116,7 @@ class PublicUserAPITests(TestCase):
         res = self.client.post(TOKEN_USER_URL, {'email': 'test',
                                                 'password': ''})
 
-        self.assertNotIn('token',res.data)
+        self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_retrieve_user_unauthorized(self):
@@ -124,3 +124,7 @@ class PublicUserAPITests(TestCase):
         res = self.client.post(ME_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_user_profile(self):
+        """Test update user's nickname and image"""
+

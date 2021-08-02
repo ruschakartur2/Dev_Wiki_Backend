@@ -51,14 +51,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         newest = self.request.query_params.get('new')
         popular = self.request.query_params.get('popular')
-        my = self.request.query_params.get('my')
 
         if newest == '1':
             queryset = queryset.order_by('-id')
         if popular == '1':
             queryset = queryset.order_by('-visits')
-        if my == '1' and (self.request.user.id is not None):
-            queryset = queryset.filter(author=self.request.user.id)
 
         return queryset
 

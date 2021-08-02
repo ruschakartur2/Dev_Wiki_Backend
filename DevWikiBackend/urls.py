@@ -10,7 +10,7 @@ from .yasg import urlpatterns as doc_urls
 
 urlpatterns = [
         url(r'admin/', admin.site.urls),
-        url(r'api/', include('core.urls'))
+        url(r'api/', include('core.urls')),
 ]
 urlpatterns += doc_urls
 urlpatterns += staticfiles_urlpatterns()
