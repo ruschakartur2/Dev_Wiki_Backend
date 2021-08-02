@@ -11,6 +11,6 @@ urlpatterns = [
     path(r'accounts/', include('api.accounts.urls'), name='accounts'),
 
     path('auth/', include('social_django.urls', namespace='social')),
-    path('auth/signup/', SocialAuthView.as_view(), name='signup-social')
-
-] + static(settings.STATIC_URL)
+    path('login/', include('rest_social_auth.urls_token')),
+    path('login/', include('rest_social_auth.urls_session')),
+              ] + static(settings.STATIC_URL)

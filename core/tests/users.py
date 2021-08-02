@@ -124,3 +124,7 @@ class PublicUserAPITests(TestCase):
         res = self.client.post(ME_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_user_profile(self):
+        """Test update user's nickname and image"""
+

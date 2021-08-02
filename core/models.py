@@ -6,9 +6,12 @@ from django.db import models
 from django.utils import timezone
 from django_extensions.db.fields import RandomCharField
 from simple_history.models import HistoricalRecords
+from django.core.validators import RegexValidator
 
 from core.managers import users
 from django.utils.translation import ugettext_lazy as _
+
+alphavalidator = RegexValidator(r'[A-Za-zwА-Яа-яІіЄєЇї]+$', 'That field can contain only letters')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -36,7 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=64, unique=True)
+    title = models.CharField(max_length=64, unique=True, validators=[alphavalidator])
 
     def __str__(self):
         return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
@@ -45,7 +48,7 @@ class Tag(models.Model):
 class Article(models.Model):
     title = models.CharField(verbose_name=_("Article's title"),
                              max_length=255,
-                             validators=[MinLengthValidator(1)])
+                             validators=[MinLengthValidator(1), alphavalidator])
     created_at = models.DateTimeField(verbose_name=_("Article's created time"), auto_now=True)
     author = models.ForeignKey(get_user_model(),
                                verbose_name=_("Article's author"),
@@ -55,7 +58,8 @@ class Article(models.Model):
                            include_alpha=False,
                            unique=True,
                            verbose_name=_("Article's slug field to url search"))
-    tags = models.ManyToManyField(Tag, related_name='articles')
+    tags = models.ManyToManyField(Tag,
+                                  related_name='articles', )
     visits = models.IntegerField(default=0)
     previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
 

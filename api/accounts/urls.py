@@ -18,6 +18,7 @@ urlpatterns = [
     path('create/', views.CreateUserAPIView.as_view(), name='create'),
     path('login/', views.UserLoginAPIView.as_view(), name='login'),
     path('me/', me, name='me'),
+    path('oauth/', views.SocialAuthView.as_view(),name='oauth'),
     path('profile/<int:pk>', profile_detail, name='profile')
 
 ]
