@@ -74,8 +74,13 @@ class SocialAuthView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+        token = self.get_serializer(data=request.data)
+        token.is_valid(raise_exception=True)
+        profile = serializers.ProfileSerializer(token.user)
+        user = serializers.UserDetailSerializer(token.user)
+        self.perform_create(token)
+        headers = self.get_success_headers(token.data)
+        return Response({'token': token.data['auth_token'],
+                         'profile': profile.data,
+                         'user': user.data
+                         }, status=status.HTTP_200_OK, headers=headers)

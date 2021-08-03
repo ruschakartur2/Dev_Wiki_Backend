@@ -69,8 +69,8 @@ class PrivateArticleAPITests(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            'test@test.com',
-            'testtest'
+            email='1@j.com',
+            password='testtest'
         )
         self.default_permission_error = 'You do not have permission to perform this action.'
         self.client = APIClient()
@@ -225,3 +225,113 @@ class PrivateArticleAPITests(TestCase):
         delete_res = self.client.delete('/api/articles/' + new_article.data['slug'] + '/')
         self.assertEqual(delete_res.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(delete_res.data['detail'], self.default_permission_error)
+
+    def test_get_newest_articles(self):
+        self.client.post('/api/articles/', {
+            'title': 'testtestMoretest',
+            'body': 'ultratest',
+            'update_tags': 'megaTESTT'
+        })
+        self.client.post('/api/articles/', {
+            'title': '2',
+            'body': 'ultratest2',
+            'update_tags': 'megaT2'
+        })
+        self.client.post('/api/articles/', {
+            'title': '3',
+            'body': 'ultratest3',
+            'update_tags': 'megaTESTT3'
+        })
+        res = self.client.get('/api/articles/?new=1/')
+        articles = Article.objects.all().order_by('created_at')
+        serializer = ArticlePublicSerializer(articles, many=True)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['results'], serializer.data)
+
+    def test_get_newest_articles_failed(self):
+        self.client.post('/api/articles/', {
+            'title': 'testtestMoretest',
+            'body': 'ultratest',
+            'update_tags': 'megaTESTT'
+        })
+        self.client.post('/api/articles/', {
+            'title': '2',
+            'body': 'ultratest2',
+            'update_tags': 'megaT2'
+        })
+        self.client.post('/api/articles/', {
+            'title': '3',
+            'body': 'ultratest3',
+            'update_tags': 'megaTESTT3'
+        })
+        res = self.client.get('/api/articles/?new=1/')
+        # Change order in reverse stack
+        articles = Article.objects.all().order_by('-created_at')
+        serializer = ArticlePublicSerializer(articles, many=True)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(res.data['results'], serializer.data)
+
+    def test_get_popular_articles(self):
+        res1 = self.client.post('/api/articles/', {
+            'title': 'testtestMoretest',
+            'body': 'ultratest',
+            'update_tags': 'megaTESTT'
+        })
+        res2 = self.client.post('/api/articles/', {
+            'title': '2',
+            'body': 'ultratest2',
+            'update_tags': 'megaT2'
+        })
+        res3 = self.client.post('/api/articles/', {
+            'title': '3',
+            'body': 'ultratest3',
+            'update_tags': 'megaTESTT3'
+        })
+        self.client.get('/api/articles/' + res1.data['slug'] + '/')
+        self.client.get('/api/articles/' + res1.data['slug'] + '/')
+        self.client.get('/api/articles/' + res1.data['slug'] + '/')
+        self.client.get('/api/articles/' + res2.data['slug'] + '/')
+        self.client.get('/api/articles/' + res3.data['slug'] + '/')
+        self.client.get('/api/articles/' + res2.data['slug'] + '/')
+        self.client.get('/api/articles/' + res1.data['slug'] + '/')
+
+        res = self.client.get('/api/articles/?popular=1')
+        self.assertEqual(res.data['results'][0]['visits'], 4)
+        articles = Article.objects.all().order_by('-visits')
+        serializer = ArticlePublicSerializer(articles, many=True)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['results'], serializer.data)
+
+    def test_get_popular_articles_failed(self):
+        """Added don't needed slash in url and functional not working"""
+        res1 = self.client.post('/api/articles/', {
+            'title': 'testtestMoretest',
+            'body': 'ultratest',
+            'update_tags': 'megaTESTT'
+        })
+        res2 = self.client.post('/api/articles/', {
+            'title': '2',
+            'body': 'ultratest2',
+            'update_tags': 'megaT2'
+        })
+        res3 = self.client.post('/api/articles/', {
+            'title': '3',
+            'body': 'ultratest3',
+            'update_tags': 'megaTESTT3'
+        })
+
+        self.client.get('/api/articles/' + res1.data['slug'] + '/')
+        self.client.get('/api/articles/' + res1.data['slug'] + '/')
+        self.client.get('/api/articles/' + res1.data['slug'] + '/')
+        self.client.get('/api/articles/' + res2.data['slug'] + '/')
+        self.client.get('/api/articles/' + res3.data['slug'] + '/')
+        self.client.get('/api/articles/' + res2.data['slug'] + '/')
+        self.client.get('/api/articles/' + res1.data['slug'] + '/')
+        # Added don't needed slash in url and functional not working
+        res = self.client.get('/api/articles/?popular=1/')
+        # Change order in reverse stack
+        articles = Article.objects.all().order_by('-visits')
+        serializer = ArticlePublicSerializer(articles, many=True)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['results'][0]['visits'], 1)
+        self.assertNotEqual(res.data['results'], serializer.data)
