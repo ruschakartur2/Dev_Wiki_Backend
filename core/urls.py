@@ -10,7 +10,4 @@ urlpatterns = [
     path(r'tags/', include('api.tags.urls'), name='tags'),
     path(r'accounts/', include('api.accounts.urls'), name='accounts'),
 
-    path('auth/', include('social_django.urls', namespace='social')),
-    path('login/', include('rest_social_auth.urls_token')),
-    path('login/', include('rest_social_auth.urls_session')),
-              ] + static(settings.STATIC_URL)
+    ] + static(settings.STATIC_URL)
