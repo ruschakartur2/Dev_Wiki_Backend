@@ -1,10 +1,14 @@
 import django_filters.rest_framework
 from django.db.models import F
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
+from api.accounts.serializers import UserDetailSerializer
 from core.models import Article
 from core.permissions import IsOwnerOrReadOnly
 from api.articles.serializers import ArticleSerializer, ArticleListSerializer, ArticlePublicSerializer
@@ -37,6 +41,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    def destroy(self, request, *args, **kwargs):
+        article = self.get_object()
+        article.state = 2
+        article.save()
+        return Response(ArticleSerializer(self.get_object()).data)
+
     def get_serializer_class(self):
         if self.action == 'list':
             return ArticleListSerializer
@@ -45,6 +55,9 @@ class ArticleViewSet(viewsets.ModelViewSet):
         if self.action == 'partial_update' and self.request.user == self.get_object().author:
             return ArticleSerializer
         return ArticlePublicSerializer
+
+    def dispatch(self, *args, **kwargs):
+        return super(ArticleViewSet, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         queryset = Article.objects.all()

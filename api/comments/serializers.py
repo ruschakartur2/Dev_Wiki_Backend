@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.accounts.serializers import UserDetailSerializer
+from api.accounts.serializers import ProfileSerializer
 from core.models import Comment, Article
 from drf_writable_nested import WritableNestedModelSerializer
 
@@ -28,5 +28,5 @@ class CommentSerializer(WritableNestedModelSerializer, serializers.ModelSerializ
 
     def to_representation(self, instance):
         """Function to show author data"""
-        self.fields['author'] = UserDetailSerializer(read_only=True)
+        self.fields['author'] = ProfileSerializer(read_only=True)
         return super(CommentSerializer, self).to_representation(instance)

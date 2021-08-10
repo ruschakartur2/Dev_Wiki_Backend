@@ -1,18 +1,22 @@
 from rest_framework import serializers
 
 from api.accounts.serializers import UserDetailSerializer
-from core.models import Article, Tag
+from core.choices import Role
+from core.models import Article, Tag, Membership
 
 
 class ArticlePublicSerializer(serializers.ModelSerializer):
     """Serializer to CRUD Articles if not author"""
-    tags = serializers.SlugRelatedField(many=True, slug_field='title', read_only=True)
+    tags = serializers.SlugRelatedField(many=True,
+                                        slug_field='title',
+                                        read_only=True)
     update_tags = serializers.ListField(
-        child=serializers.CharField(max_length=30), write_only=True)
+                                        child=serializers.CharField(max_length=30),
+                                        write_only=True)
 
     class Meta:
         model = Article
-        fields = ['id', 'slug', 'title', 'created_at', 'body', 'tags', 'visits', 'update_tags']
+        fields = ['id', 'slug', 'title', 'created_at', 'body', 'state', 'tags', 'visits', 'update_tags']
         extra_kwargs = {
             'update_tags': {
                 'allow_empty': False
@@ -22,6 +26,9 @@ class ArticlePublicSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         tag_names = validated_data.pop('update_tags')
         instance = super().create(validated_data)
+        Membership.objects.create(user=self.context['request'].user,
+                                  article=instance,
+                                  role=Role.MEMBER)
         tags = []
         for title in tag_names:
             tag, created = Tag.objects.get_or_create(title=title)
@@ -38,6 +45,8 @@ class ArticlePublicSerializer(serializers.ModelSerializer):
             tags.append(tag)
         instance.tags.set(tags)
         return instance
+
+
 
     def to_representation(self, instance):
         """Function to show author data"""

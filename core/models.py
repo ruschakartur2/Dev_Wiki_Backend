@@ -9,17 +9,23 @@ from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 
 from core.managers import users
+from .choices import Role
 from django.utils.translation import ugettext_lazy as _
+from core.choices import State
 
 alphavalidator = RegexValidator(r'[A-Za-zwА-Яа-яІіЄєЇї]+$', 'That field can contain only letters')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    is_active = models.BooleanField(verbose_name=_("User's status (online/offline)"), default=True)
+    is_staff = models.BooleanField(verbose_name=_("User's admin status"), default=False)
+    is_moder = models.BooleanField(verbose_name=_("User's moder status"), default=False)
+    is_banned = models.BooleanField(verbose_name=_("User banned"), default=False)
+    is_muted = models.BooleanField(verbose_name=_("User muted"), default=False)
+
     email = models.EmailField(verbose_name=_("User's email address"),
                               max_length=255,
                               unique=True)
-    is_active = models.BooleanField(verbose_name=_("User's status (online/offline)"), default=True)
-    is_staff = models.BooleanField(verbose_name=_("User's admin status"), default=False)
     nickname = models.CharField(verbose_name=_("User's nickname"),
                                 max_length=255,
                                 blank=True,
@@ -61,6 +67,13 @@ class Article(models.Model):
     tags = models.ManyToManyField(Tag,
                                   related_name='articles', )
     visits = models.IntegerField(default=0)
+    state = models.PositiveSmallIntegerField(
+        choices=State.choices,
+        default=State.POSTED,
+    )
+    members = models.ManyToManyField(get_user_model(),
+                                     through='core.Membership',
+                                     related_name='articles')
     previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
 
     def clean(self):
@@ -71,6 +84,19 @@ class Article(models.Model):
     def __str__(self):
         """Function to naming model"""
         return self.title
+
+
+class Membership(models.Model):
+    """Model to set user's role in Article"""
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    role = models.PositiveSmallIntegerField(
+        choices=Role.choices,
+        default=Role.MEMBER
+    )
+
+    def __str__(self):
+        return "User {} is {} to {}".format(self.user.email, self.role, self.article.title)
 
 
 class Comment(models.Model):
