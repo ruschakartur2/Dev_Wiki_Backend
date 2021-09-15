@@ -22,7 +22,7 @@ class TagModelTests(TestCase):
         """Test creating a new article successful"""
         title = 'test'
         author = get_user_model().objects.create_user(email='test', password='test123321')
-        article = create_article(title='1233321', author=author, body='testtesttest')
+        create_article(title='1233321', author=author, body='testtesttest')
         new_tag = Tag.objects.create(title=title)
         tag_list = Tag.objects.all()
         self.assertEqual(new_tag.title, title)
@@ -52,7 +52,7 @@ class PublicTagAPITests(TestCase):
 
     def test_get_list_tags_successful(self):
         author = get_user_model().objects.create_user(email='test@test.com', password='testtesttest')
-        article = create_article(title='test', body='test', author=author)
+        create_article(title='test', body='test', author=author)
         Tag.objects.create(title='title1')
         Tag.objects.create(title='title2')
 

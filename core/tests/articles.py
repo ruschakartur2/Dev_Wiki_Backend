@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APIClient, force_authenticate
+from rest_framework.test import APIClient
 
 from django.contrib.auth import get_user_model
 
@@ -86,16 +86,27 @@ class PrivateArticleAPITests(TestCase):
         res = self.client.post(ARTICLE_PUBLIC_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
+    def test_create_article_body_with_less_symbols(self):
+        payload = {
+            'title': 'test title',
+            'body': '123456789',
+            'update_tags': '[]'
+        }
+        res = self.client.post(ARTICLE_PUBLIC_URL, payload)
+        self.assertEqual(res.data['body'][0], 'Ensure this value has at least 10 characters (it has 9).')
+        self.assertEqual(res.data['body'][0].code, 'min_length')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_create_unique_title_article(self):
         payload = {
             'title': 'testTitle',
-            'body': 'newBody',
+            'body': 'newBodyffffffffffffffffffffffffffffffff',
             'update_tags': 'test'
         }
         self.client.post(ARTICLE_PUBLIC_URL, payload)
         payload2 = {
             'title': 'testTitle',
-            'body': 'newBody432',
+            'body': 'newBody432fffffffffffffffffffff',
             'update_tags': 'test534543'
         }
         self.assertEqual(payload['title'], payload2['title'])
@@ -104,7 +115,7 @@ class PrivateArticleAPITests(TestCase):
 
     def test_create_article_without_title(self):
         payload = {
-            'body': 'newBody',
+            'body': 'newBodyffffffffffffffffffff',
             'update_tags': 'test'
         }
         res = self.client.post(ARTICLE_PUBLIC_URL, payload)
@@ -121,7 +132,7 @@ class PrivateArticleAPITests(TestCase):
     def test_create_article_without_tags(self):
         payload = {
             'title': 'new_title',
-            'body': 'test'
+            'body': 'testffffffffffffffffffffffffffffffffffffffff'
         }
         res = self.client.post(ARTICLE_PUBLIC_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
@@ -129,7 +140,7 @@ class PrivateArticleAPITests(TestCase):
     def test_retrieve_article_by_slug_success(self):
         payload = {
             'title': 'Arturka',
-            'body': 'newBody',
+            'body': 'newBodyfffffffffffffffffffffffffffff',
             'update_tags': 'test'
         }
         res = self.client.post(ARTICLE_PUBLIC_URL, payload)
@@ -144,12 +155,12 @@ class PrivateArticleAPITests(TestCase):
     def test_update_article_success(self):
         payload = {
             'title': 'Arturka',
-            'body': 'newBody',
+            'body': 'newBodyfffffffffffffffffffffffffffffffffffff',
             'update_tags': 'test'
         }
         patch_payload = {
             'title': 'New title',
-            'body': 'hahahah new body',
+            'body': 'hahahah new bodyffffff',
             'update_tags': 'Badaboy'
         }
         res = self.client.post(ARTICLE_PUBLIC_URL, payload)
@@ -162,7 +173,7 @@ class PrivateArticleAPITests(TestCase):
     def test_delete_article_success(self):
         payload = {
             'title': 'Arturka',
-            'body': 'newBody',
+            'body': 'newBodyfffffffffffffffffffffffffffffffffffff',
             'update_tags': 'test'
         }
         res = self.client.post(ARTICLE_PUBLIC_URL, payload)
@@ -173,15 +184,15 @@ class PrivateArticleAPITests(TestCase):
     def test_update_article_without_authentication(self):
         new_article = self.client.post('/api/articles/', {
             'title': 'testtestMoretest',
-            'body': 'ultratest',
-            'update_tags': 'megaTESTT'
+            'body': 'ultratestffffffffffffffffffffffffff',
+            'update_tags': '[]'
         })
         self.assertEqual(new_article.status_code, status.HTTP_201_CREATED)
         self.client.logout()
 
         patch_payload = {
             'title': '123',
-            'body': '321',
+            'body': '321ffffffffffffffffffffffffffffffff',
             'update_tags': '231'
         }
         patch_res = self.client.patch('/api/articles/' + new_article.data['slug'] + '/', patch_payload)
@@ -194,7 +205,7 @@ class PrivateArticleAPITests(TestCase):
         )
         new_article = self.client.post('/api/articles/', {
             'title': 'testtestMoretest',
-            'body': 'ultratest',
+            'body': 'ultratestfffffffffffffffffffffffffffffff',
             'update_tags': 'megaTESTT'
         })
         self.assertEqual(new_article.status_code, status.HTTP_201_CREATED)
@@ -202,7 +213,7 @@ class PrivateArticleAPITests(TestCase):
         self.client.force_authenticate(new_user)
         patch_payload = {
             'title': '123',
-            'body': '321',
+            'body': '321fffffffffffffffffffffffffff',
             'update_tags': '231'
         }
         patch_res = self.client.patch('/api/articles/' + new_article.data['slug'] + '/', patch_payload)
@@ -216,7 +227,7 @@ class PrivateArticleAPITests(TestCase):
         )
         new_article = self.client.post('/api/articles/', {
             'title': 'testtestMoretest',
-            'body': 'ultratest',
+            'body': 'ultratestfdsfdsfdsfdsfdsfdsfs',
             'update_tags': 'megaTESTT'
         })
         self.assertEqual(new_article.status_code, status.HTTP_201_CREATED)
@@ -229,17 +240,17 @@ class PrivateArticleAPITests(TestCase):
     def test_get_newest_articles(self):
         self.client.post('/api/articles/', {
             'title': 'testtestMoretest',
-            'body': 'ultratest',
+            'body': 'ultratestfsdfsdfsdgggfsfds',
             'update_tags': 'megaTESTT'
         })
         self.client.post('/api/articles/', {
             'title': '2',
-            'body': 'ultratest2',
+            'body': 'ultratest2ffsdfdsfdsfdsfds',
             'update_tags': 'megaT2'
         })
         self.client.post('/api/articles/', {
             'title': '3',
-            'body': 'ultratest3',
+            'body': 'ultratest3fdsfsafsadfsdfsdfsd',
             'update_tags': 'megaTESTT3'
         })
         res = self.client.get('/api/articles/?new=1/')
@@ -251,20 +262,20 @@ class PrivateArticleAPITests(TestCase):
     def test_get_newest_articles_failed(self):
         self.client.post('/api/articles/', {
             'title': 'testtestMoretest',
-            'body': 'ultratest',
+            'body': 'ultratestfsdfsadfdsfdsfds',
             'update_tags': 'megaTESTT'
         })
         self.client.post('/api/articles/', {
             'title': '2',
-            'body': 'ultratest2',
+            'body': 'ultratest2dasfdsgfdsgsfsad',
             'update_tags': 'megaT2'
         })
         self.client.post('/api/articles/', {
             'title': '3',
-            'body': 'ultratest3',
+            'body': 'ultratest3fffffffffffffff',
             'update_tags': 'megaTESTT3'
         })
-        res = self.client.get('/api/articles/?new=1/')
+        res = self.client.get('/api/articles/?ordering=created_at/')
         # Change order in reverse stack
         articles = Article.objects.all().order_by('-created_at')
         serializer = ArticlePublicSerializer(articles, many=True)

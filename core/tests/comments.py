@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APIClient, force_authenticate
+from rest_framework.test import APIClient
 
 from django.contrib.auth import get_user_model
 
@@ -23,7 +23,7 @@ class CommentModelTests(TestCase):
         title = 'test'
         content = 'test'
         author = get_user_model().objects.create_user(email='test', password='test123321')
-        article = create_article(title='1233321', author=author, body='testtesttest')
+        article = create_article(title=title, author=author, body='testtesttest')
         new_comment = Comment.objects.create(article=article, content=content, author=author)
         comment_list = Comment.objects.all()
         self.assertEqual(new_comment.content, content)

@@ -1,27 +1,38 @@
 from rest_framework import serializers
 
 from api.accounts.serializers import UserDetailSerializer
-from core.models import Article, Tag
+from core.utils.choices import Role
+from core.models import Article, Tag, Membership
 
 
 class ArticlePublicSerializer(serializers.ModelSerializer):
     """Serializer to CRUD Articles if not author"""
-    tags = serializers.SlugRelatedField(many=True, slug_field='title', read_only=True)
+    created_at = serializers.DateTimeField(format="%d, %b %Y - %H:%M", required=False)
+    updated_at = serializers.DateTimeField(format="%d, %b %Y - %H:%M", required=False, default=None)
+
+    tags = serializers.SlugRelatedField(many=True,
+                                        slug_field='title',
+                                        read_only=True)
     update_tags = serializers.ListField(
-        child=serializers.CharField(max_length=30), write_only=True)
+        child=serializers.CharField(max_length=30),
+        write_only=True, )
 
     class Meta:
         model = Article
-        fields = ['id', 'slug', 'title', 'created_at', 'body', 'tags', 'visits', 'update_tags']
+        fields = ['id', 'slug', 'title', 'created_at', 'updated_at', 'visits', 'body', 'status', 'tags', 'update_tags']
+        read_only_fields = ('created_at', 'updated_at')
         extra_kwargs = {
             'update_tags': {
-                'allow_empty': False
+                'allow_empty': True
             }
         }
 
     def create(self, validated_data):
         tag_names = validated_data.pop('update_tags')
         instance = super().create(validated_data)
+        Membership.objects.create(user=self.context['request'].user,
+                                  article=instance,
+                                  role=Role.MEMBER)
         tags = []
         for title in tag_names:
             tag, created = Tag.objects.get_or_create(title=title)

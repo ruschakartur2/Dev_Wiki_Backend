@@ -2,31 +2,32 @@ import django_filters.rest_framework
 from django.db.models import F
 from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 
 from core.models import Article
-from core.permissions import IsOwnerOrReadOnly
+from core.utils.permissions import IsOwnerOrReadOnly, IsModer, IsBaned, IsMuted
 from api.articles.serializers import ArticleSerializer, ArticleListSerializer, ArticlePublicSerializer
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
     """View set to article model"""
+    queryset = Article.objects.filter(status=1)
     serializer_class = ArticleSerializer
-    permission_classes_by_action = {'create': [IsAuthenticated],
-                                    'list': [AllowAny, ],
-                                    'update': [IsOwnerOrReadOnly, ],
-                                    'partial_update': [IsOwnerOrReadOnly],
-                                    'retrieve': [AllowAny],
-                                    'destroy': [IsOwnerOrReadOnly], }
-    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
+    permission_classes_by_action = {
+        'create': [IsAuthenticated and IsBaned or IsMuted],
+        'list': [AllowAny and IsBaned],
+        'update': [IsOwnerOrReadOnly and IsAdminUser and IsModer],
+        'partial_update': [IsOwnerOrReadOnly and IsAdminUser and IsModer],
+        'retrieve': [AllowAny and IsBaned],
+        'destroy': [IsOwnerOrReadOnly and IsAdminUser and IsModer],
+    }
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend]
     pagination_class = PageNumberPagination
     search_fields = ['title']
+    ordering_fields = ['created_at', 'visits']
     filterset_fields = ['tags__title', 'author__id']
-    try:
-        lookup_field = 'slug'
-    except:
-        lookup_field = 'pk'
+    lookup_field = "slug"
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -37,6 +38,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    def destroy(self, request, *args, **kwargs):
+        article = self.get_object()
+        article.state = 2
+        article.save()
+        return Response(ArticleSerializer(self.get_object()).data)
+
     def get_serializer_class(self):
         if self.action == 'list':
             return ArticleListSerializer
@@ -46,23 +53,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
             return ArticleSerializer
         return ArticlePublicSerializer
 
-    def get_queryset(self):
-        queryset = Article.objects.all()
-
-        newest = self.request.query_params.get('new')
-        popular = self.request.query_params.get('popular')
-
-        if newest == '1':
-            queryset = queryset.order_by('-id')
-        if popular == '1':
-            queryset = queryset.order_by('-visits')
-
-        return queryset
-
     def get_permissions(self):
         try:
-            # return permission_classes depending on `action`
             return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError:
-            # action is not set return default permission_classes
             return [permission() for permission in self.permission_classes]

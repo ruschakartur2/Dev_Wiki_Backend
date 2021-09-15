@@ -1,23 +1,26 @@
+import django_filters
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
+from core.utils.filters import TagFilter
 from core.models import Tag
 from api.tags.serializers import TagsSerializer
-from core.permissions import IsOwnerOrReadOnly
 
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagsSerializer
     pagination_class = None
-
-    permission_classes_by_action = {'create': [IsAuthenticated],
-                                    'list': [AllowAny],
-                                    'update': [IsAuthenticated],
-                                    'partial_update': [IsAuthenticated],
-                                    'retrieve': [AllowAny, IsAuthenticated],
-                                    'destroy': [IsAuthenticated],
-                                     }
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_class = TagFilter
+    permission_classes_by_action = {
+        'create': [IsAuthenticated],
+        'list': [AllowAny],
+        'update': [IsAuthenticated],
+        'partial_update': [IsAuthenticated],
+        'retrieve': [AllowAny, IsAuthenticated],
+        'destroy': [IsAuthenticated],
+    }
 
 
     def get_permissions(self):
