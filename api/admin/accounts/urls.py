@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from api.admin.accounts import views
 
 admin_accounts_list = views.AdminAccountsViewSet.as_view({

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.accounts.serializers import ProfileSerializer
+from api.accounts.serializers import UserDetailSerializer
 from core.models import Comment, Article
 from drf_writable_nested import WritableNestedModelSerializer
 
@@ -19,14 +19,16 @@ class RecursiveSerializer(WritableNestedModelSerializer, serializers.Serializer)
 
 class CommentSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
     """Comment serializer with nested childrens"""
+    created_at = serializers.DateTimeField(format="%d, %b %Y - %H:%M", required=False)
     article = serializers.PrimaryKeyRelatedField(queryset=Article.objects.all())
     children = RecursiveSerializer(many=True, required=False)
 
     class Meta:
         model = Comment
-        fields = ['id', 'article', 'content', 'parent', 'date_posted', 'children']
+        fields = ['id', 'article', 'content', 'parent', 'created_at', 'children']
+        read_only_fields = ['children']
 
     def to_representation(self, instance):
         """Function to show author data"""
-        self.fields['author'] = ProfileSerializer(read_only=True)
+        self.fields['author'] = UserDetailSerializer(read_only=True)
         return super(CommentSerializer, self).to_representation(instance)

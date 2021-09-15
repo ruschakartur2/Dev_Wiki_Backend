@@ -1,25 +1,29 @@
 from rest_framework import serializers
 
 from api.accounts.serializers import UserDetailSerializer
-from core.choices import Role
+from core.utils.choices import Role
 from core.models import Article, Tag, Membership
 
 
 class ArticlePublicSerializer(serializers.ModelSerializer):
     """Serializer to CRUD Articles if not author"""
+    created_at = serializers.DateTimeField(format="%d, %b %Y - %H:%M", required=False)
+    updated_at = serializers.DateTimeField(format="%d, %b %Y - %H:%M", required=False, default=None)
+
     tags = serializers.SlugRelatedField(many=True,
                                         slug_field='title',
                                         read_only=True)
     update_tags = serializers.ListField(
-                                        child=serializers.CharField(max_length=30),
-                                        write_only=True)
+        child=serializers.CharField(max_length=30),
+        write_only=True, )
 
     class Meta:
         model = Article
-        fields = ['id', 'slug', 'title', 'created_at', 'body', 'state', 'tags', 'visits', 'update_tags']
+        fields = ['id', 'slug', 'title', 'created_at', 'updated_at', 'visits', 'body', 'status', 'tags', 'update_tags']
+        read_only_fields = ('created_at', 'updated_at')
         extra_kwargs = {
             'update_tags': {
-                'allow_empty': False
+                'allow_empty': True
             }
         }
 
@@ -45,8 +49,6 @@ class ArticlePublicSerializer(serializers.ModelSerializer):
             tags.append(tag)
         instance.tags.set(tags)
         return instance
-
-
 
     def to_representation(self, instance):
         """Function to show author data"""

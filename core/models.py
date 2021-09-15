@@ -1,19 +1,18 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import AbstractUser, PermissionsMixin
-from django.core.validators import MinLengthValidator, EmailValidator
+from django.contrib.auth.models import PermissionsMixin
+from django.core.validators import MinLengthValidator
 from django.db import models
-from django.utils import timezone
 from django_extensions.db.fields import RandomCharField
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 
 from core.managers import users
-from .choices import Role
+from .utils.choices import Role, State
 from django.utils.translation import ugettext_lazy as _
-from core.choices import State
 
-alphavalidator = RegexValidator(r'[A-Za-zwА-Яа-яІіЄєЇї]+$', 'That field can contain only letters')
+
+alphaValidator = RegexValidator(r'[A-Za-zwА-Яа-яІіЄєЇї]+$', 'That field can contain only letters')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -45,7 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=64, unique=True, validators=[alphavalidator])
+    title = models.CharField(max_length=64, unique=True, validators=[alphaValidator])
 
     def __str__(self):
         return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
@@ -54,12 +53,13 @@ class Tag(models.Model):
 class Article(models.Model):
     title = models.CharField(verbose_name=_("Article's title"),
                              max_length=255,
-                             validators=[MinLengthValidator(1), alphavalidator])
-    created_at = models.DateTimeField(verbose_name=_("Article's created time"), auto_now=True)
+                             validators=[MinLengthValidator(1), alphaValidator])
+    created_at = models.DateTimeField(verbose_name=_("Article's created time"), auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name=_("Article's updated time"), auto_now=True)
     author = models.ForeignKey(get_user_model(),
                                verbose_name=_("Article's author"),
                                on_delete=models.CASCADE)
-    body = models.TextField(verbose_name=_('Body'))
+    body = models.TextField(verbose_name=_('Body'), validators=[MinLengthValidator(10)])
     slug = RandomCharField(length=4,
                            include_alpha=False,
                            unique=True,
@@ -67,7 +67,7 @@ class Article(models.Model):
     tags = models.ManyToManyField(Tag,
                                   related_name='articles', )
     visits = models.IntegerField(default=0)
-    state = models.PositiveSmallIntegerField(
+    status = models.PositiveSmallIntegerField(
         choices=State.choices,
         default=State.POSTED,
     )
@@ -116,7 +116,7 @@ class Comment(models.Model):
                                null=True,
                                related_name='children',
                                verbose_name=_("Reply to comment"))
-    date_posted = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return 'Comment {}'.format(self.content)

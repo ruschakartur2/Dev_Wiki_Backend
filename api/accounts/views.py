@@ -1,14 +1,14 @@
 from django.contrib.auth import get_user_model
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_cookie
 from rest_framework import generics, authentication, permissions, status, viewsets
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
 from api.accounts import serializers
 from rest_framework.authtoken.models import Token
+
+from core.utils.permissions import IsOwnerOrReadOnly, IsModer
 
 
 class CreateUserAPIView(generics.CreateAPIView):
@@ -63,13 +63,30 @@ class ManageUserView(viewsets.ModelViewSet):
 
 
 class ProfileView(viewsets.ModelViewSet):
+    """View to public profile"""
     serializer_class = serializers.ProfileSerializer
+
     authentication_classes = [authentication.TokenAuthentication,
                               authentication.SessionAuthentication,
                               authentication.BasicAuthentication]
 
+    permission_classes_by_action = {
+        'create': [AllowAny],
+        'list': [IsAdminUser and IsModer],
+        'update': [IsOwnerOrReadOnly and IsAdminUser],
+        'partial_update': [IsOwnerOrReadOnly and IsAdminUser],
+        'retrieve': [AllowAny],
+        'destroy': [IsOwnerOrReadOnly and IsAdminUser],
+    }
+
     def get_queryset(self):
         return get_user_model().objects.all()
+
+    def get_permissions(self):
+        try:
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError:
+            return [permission() for permission in self.permission_classes]
 
 
 class SocialAuthView(generics.CreateAPIView):
@@ -88,3 +105,4 @@ class SocialAuthView(generics.CreateAPIView):
                          'profile': profile.data,
                          'user': user.data
                          }, status=status.HTTP_200_OK, headers=headers)
+

@@ -1,5 +1,4 @@
-from django.urls import path, include
-from DevWikiBackend import settings
+from django.urls import path
 from api.tags import views
 
 tag_list = views.TagViewSet.as_view({
