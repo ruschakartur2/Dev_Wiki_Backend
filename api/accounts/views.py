@@ -65,7 +65,6 @@ class ManageUserView(viewsets.ModelViewSet):
 class ProfileView(viewsets.ModelViewSet):
     """View to public profile"""
     serializer_class = serializers.ProfileSerializer
-
     authentication_classes = [authentication.TokenAuthentication,
                               authentication.SessionAuthentication,
                               authentication.BasicAuthentication]

@@ -1,8 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from core.models import Membership
-
 
 class AdminAccountsSerializer(serializers.ModelSerializer):
     """Serializer for manage admin accounts"""
@@ -17,9 +15,3 @@ class AdminAccountsSerializer(serializers.ModelSerializer):
         }
 
 
-class MembershipSerializer(serializers.ModelSerializer):
-    """Serializer for relations between user and article"""
-
-    class Meta:
-        model = Membership
-        fields = '__all__'

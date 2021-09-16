@@ -8,7 +8,7 @@ from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 
 from core.managers import users
-from .utils.choices import Role, State
+from .utils.choices import State
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -44,7 +44,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=64, unique=True, validators=[alphaValidator])
+    title = models.CharField(max_length=64, verbose_name=_("Tag's title"), unique=True, validators=[alphaValidator])
+    description = models.CharField(max_length=255, verbose_name=_("Tag's description"))
 
     def __str__(self):
         return 'Tag[id:{id}, title: {title}]'.format(id=self.id, title=self.title)
@@ -59,7 +60,7 @@ class Article(models.Model):
     author = models.ForeignKey(get_user_model(),
                                verbose_name=_("Article's author"),
                                on_delete=models.CASCADE)
-    body = models.TextField(verbose_name=_('Body'), validators=[MinLengthValidator(10)])
+    body = models.TextField(verbose_name=_("Article's body"), validators=[MinLengthValidator(10)])
     slug = RandomCharField(length=4,
                            include_alpha=False,
                            unique=True,
@@ -70,33 +71,14 @@ class Article(models.Model):
     status = models.PositiveSmallIntegerField(
         choices=State.choices,
         default=State.POSTED,
+        verbose_name=_("Article's status (Deleted/Posted)")
     )
-    members = models.ManyToManyField(get_user_model(),
-                                     through='core.Membership',
-                                     related_name='articles')
     previous_version = HistoricalRecords(verbose_name=_("Article's previous version"))
-
-    def clean(self):
-        from django.core.exceptions import ValidationError
-        if self.title == '':
-            raise ValidationError('Empty error message')
 
     def __str__(self):
         """Function to naming model"""
         return self.title
 
-
-class Membership(models.Model):
-    """Model to set user's role in Article"""
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    role = models.PositiveSmallIntegerField(
-        choices=Role.choices,
-        default=Role.MEMBER
-    )
-
-    def __str__(self):
-        return "User {} is {} to {}".format(self.user.email, self.role, self.article.title)
 
 
 class Comment(models.Model):

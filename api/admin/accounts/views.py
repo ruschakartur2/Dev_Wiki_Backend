@@ -4,8 +4,8 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
-from core.models import Membership
-from .serializers import AdminAccountsSerializer, MembershipSerializer
+
+from .serializers import AdminAccountsSerializer
 
 
 class AdminAccountsViewSet(viewsets.ModelViewSet):
@@ -24,7 +24,3 @@ class AdminAccountsViewSet(viewsets.ModelViewSet):
         user.save()
         return Response(AdminAccountsSerializer(self.get_object()).data)
 
-
-class MembershipViewSet(viewsets.ModelViewSet):
-    serializer_class = MembershipSerializer
-    queryset = Membership.objects.all()

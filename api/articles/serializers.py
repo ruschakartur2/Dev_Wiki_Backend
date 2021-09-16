@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from api.accounts.serializers import UserDetailSerializer
 from core.utils.choices import Role
-from core.models import Article, Tag, Membership
+from core.models import Article, Tag
 
 
 class ArticlePublicSerializer(serializers.ModelSerializer):
@@ -30,9 +30,7 @@ class ArticlePublicSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         tag_names = validated_data.pop('update_tags')
         instance = super().create(validated_data)
-        Membership.objects.create(user=self.context['request'].user,
-                                  article=instance,
-                                  role=Role.MEMBER)
+
         tags = []
         for title in tag_names:
             tag, created = Tag.objects.get_or_create(title=title)
