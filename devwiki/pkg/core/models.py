@@ -96,6 +96,11 @@ class Comment(models.Model):
                                null=True,
                                related_name='children',
                                verbose_name=_("Reply to comment"))
+    status = models.PositiveSmallIntegerField(
+        choices=State.choices,
+        default=State.POSTED,
+        verbose_name=_("Comment's status (Deleted/Posted)")
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
