@@ -74,6 +74,16 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
 
 
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for update user profile
+    """
+
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'email', 'image', 'nickname', 'password']
+
+
 class TokenSerializer(serializers.ModelSerializer):
     """Serializer to authentication token"""
     auth_token = serializers.CharField(source='key')

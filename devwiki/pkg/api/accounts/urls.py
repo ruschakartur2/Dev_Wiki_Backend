@@ -1,27 +1,16 @@
 from django.urls import path, include
 
-from pkg.api.accounts.views import ManageUserView, ProfileView, CreateUserAPIView, UserLoginAPIView
+from pkg.api.accounts.views import ManageUserView, UserLoginAPIView
+from rest_framework.routers import DefaultRouter
 
-me = ManageUserView.as_view({
-    'get': 'retrieve',
-    'patch': 'partial_update',
-    'delete': 'destroy'
-})
+router = DefaultRouter()
 
-profile_detail = ProfileView.as_view({
-    'get': 'retrieve',
-    'put': 'update',
-    'patch': 'partial_update',
-    'delete': 'destroy'
-})
+router.register(r'', ManageUserView, basename='manage-profile')
 
 urlpatterns = [
-    path('create/', CreateUserAPIView.as_view(), name='create'),
     path('login/', UserLoginAPIView.as_view(), name='login'),
-    path('me/', me, name='me'),
-    path('profile/<int:pk>', profile_detail, name='profile'),
 
     path('oauth/', include('rest_social_auth.urls_token')),
     path('oauth/', include('rest_social_auth.urls_session')),
-
 ]
+urlpatterns += router.urls

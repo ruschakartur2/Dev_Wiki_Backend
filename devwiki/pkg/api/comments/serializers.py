@@ -26,7 +26,7 @@ class CommentSerializer(WritableNestedModelSerializer, serializers.ModelSerializ
 
     class Meta:
         model = Comment
-        fields = ['id', 'article', 'content', 'parent', 'created_at', 'children']
+        fields = ['id', 'article', 'content', 'parent', 'created_at', 'status', 'updated_at', 'children']
         read_only_fields = ['children', 'created_at', 'updated_at', ]
 
     def to_representation(self, instance):

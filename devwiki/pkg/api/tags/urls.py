@@ -1,19 +1,9 @@
 from django.urls import path
-from pkg.api.tags import views
+from pkg.api.tags.views import TagViewSet
+from rest_framework.routers import DefaultRouter
 
-tag_list = views.TagViewSet.as_view({
-    'get': 'list',
-    'post': 'create'
-})
+router = DefaultRouter()
 
-tag_detail = views.TagViewSet.as_view({
-    'get': 'retrieve',
-    'put': 'update',
-    'patch': 'partial_update',
-    'delete': 'destroy'
-})
+router.register(r'', TagViewSet, basename='tags')
 
-urlpatterns = [
-    path(r'', tag_list, name='tag_list'),
-    path(r'<pk>/', tag_detail, name='tag_detail'),
-]
+urlpatterns = router.urls

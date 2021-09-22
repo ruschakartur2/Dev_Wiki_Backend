@@ -1,46 +1,33 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics, authentication, permissions, status, viewsets
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
 from pkg.api.accounts.serializers import UserRegistrationSerializer, UserLoginSerializer, UserDetailSerializer, \
-    ProfileSerializer, SocialAuthSerializer
+    ProfileSerializer, SocialAuthSerializer, ProfileUpdateSerializer
 
 from rest_framework.authtoken.models import Token
 
 from pkg.core.utils.permissions import IsOwnerOrReadOnly, IsModer
 
 
-class CreateUserAPIView(generics.CreateAPIView):
-    """View to create a new user in the system"""
-    authentication_classes = ()
-    permission_classes = ()
-    serializer_class = UserRegistrationSerializer
-
-    def create(self, request, *args, **kwargs):
-        """Create and serialize new user and user's token"""
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        user = serializer.instance
-        token, created = Token.objects.get_or_create(user=user)
-        data = serializer.data
-        data['token'] = token.key
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
-
-
 class UserLoginAPIView(ObtainAuthToken):
-    """View to login user in system"""
+    """
+    Endpoint to login user in system
+
+    """
     serializer_class = UserLoginSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
     def post(self, request, *args, **kwargs):
-        """Function to authenticate user and return user's data and user's token """
+        """
+        Endpoint to authenticate user
+
+        @return: user data and user token
+        """
         response = super(UserLoginAPIView, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
         user = UserDetailSerializer(token.user)
@@ -52,46 +39,85 @@ class UserLoginAPIView(ObtainAuthToken):
 
 
 class ManageUserView(viewsets.ModelViewSet):
-    """View to user profile system"""
+    """
+    Endpoint to user profile system
+
+    """
     serializer_class = UserDetailSerializer
+    queryset = get_user_model().objects.all()
     authentication_classes = [authentication.TokenAuthentication,
                               authentication.SessionAuthentication,
                               authentication.BasicAuthentication]
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
 
-    def get_object(self):
-        """Retrieve and return authenticated user"""
-        return self.request.user
+    @action(detail=False, methods=['POST', ], permission_classes=[AllowAny])
+    def register(self, request):
+        """
+        Endpoint to create new user in system
 
+        @param request: default request
+        @return: new created user
+        """
+        serializer = UserRegistrationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
 
-class ProfileView(viewsets.ModelViewSet):
-    """View to public profile"""
-    serializer_class = ProfileSerializer
-    authentication_classes = [authentication.TokenAuthentication,
-                              authentication.SessionAuthentication,
-                              authentication.BasicAuthentication]
+        user = serializer.instance
+        token, created = Token.objects.get_or_create(user=user)
+        data = serializer.data
+        data['token'] = token.key
 
-    permission_classes_by_action = {
-        'create': [AllowAny],
-        'list': [IsAdminUser and IsModer],
-        'update': [IsOwnerOrReadOnly and IsAdminUser],
-        'partial_update': [IsOwnerOrReadOnly and IsAdminUser],
-        'retrieve': [AllowAny],
-        'destroy': [IsOwnerOrReadOnly and IsAdminUser],
-    }
+        headers = self.get_success_headers(serializer.data)
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def get_queryset(self):
-        return get_user_model().objects.all()
+    @action(detail=False, methods=['get', 'patch'], permission_classes=[permissions.IsAuthenticated])
+    def get_user(self, request):
+        """
+        Endpoint to get authenticated user
 
-    def get_permissions(self):
-        try:
-            return [permission() for permission in self.permission_classes_by_action[self.action]]
-        except KeyError:
-            return [permission() for permission in self.permission_classes]
+        @param request: default request
+        @return: User data
+        """
+        user = self.request.user
+        if self.request.method == 'GET':
+            serializer = self.get_serializer(user)
+            return Response(serializer.data)
+
+        elif self.request.method == 'PATCH':
+            serializer = self.serializer_class(user, data=request.data, partial=True)
+            serializer.is_valid()
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response('Not allowed method', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @action(detail=False, methods=['get', 'patch'], permission_classes=[permissions.IsAuthenticated])
+    def get_profile(self, request):
+        """
+        Endpoint to get authenticated user profile
+
+        @param request: default request
+        @return: user profile data
+        """
+        user = self.request.user
+        if self.request.method == 'GET':
+            serializer = ProfileSerializer(user)
+            return Response(serializer.data)
+
+        elif self.request.method == 'PATCH':
+            serializer = ProfileUpdateSerializer(user, data=request.data, partial=True)
+            serializer.is_valid()
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response('Not allowed method', status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class SocialAuthView(generics.CreateAPIView):
-    """View to authentication user with github"""
+    """
+    Endpoint to create github user token
+
+    """
     serializer_class = SocialAuthSerializer
     permission_classes = (permissions.AllowAny,)
 
