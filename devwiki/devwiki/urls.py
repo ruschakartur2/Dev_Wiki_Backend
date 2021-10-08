@@ -6,11 +6,12 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include
 
 from . import settings
-from pkg.core.utils.yasg import urlpatterns as doc_urls
+from devwiki.yasg import urlpatterns as doc_urls
 
 urlpatterns = [
         url(r'admin/', admin.site.urls),
-        url(r'api/', include('pkg.api.urls')),
+        url(r'users/', include('pkg.users.urls')),
+        url(r'articles/', include('pkg.articles.urls')),
 ]
 urlpatterns += doc_urls
 urlpatterns += staticfiles_urlpatterns()
