@@ -11,7 +11,10 @@ from pathlib import Path
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+root = environ.Path(__file__)
 env = environ.Env()
 environ.Env.read_env()
 
@@ -22,6 +25,7 @@ SECRET_KEY = env.str('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('debug')
+
 
 ALLOWED_HOSTS = '*'
 SITE_ID = 1
@@ -38,32 +42,29 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'pkg',
-    'pkg.core',
+    'pkg.articles',
+    'pkg.users',
 
     'django_filters',
     'corsheaders',
+
     'rest_framework',
     'rest_framework.authtoken',
-    'drf_yasg',
-    'rest_framework_serializer_field_permissions',
-    'oauth2_provider',
-    'rest_social_auth',  # this package
     'social_django',
-    'simple_history',
+    'rest_social_auth',
+
+    'drf_yasg',
 
 ]
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-
-    'simple_history.middleware.HistoryRequestMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
@@ -97,6 +98,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 WSGI_APPLICATION = 'devwiki.wsgi.application'
 
 # Database
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -107,25 +110,12 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-if os.environ.get('GITHUB_WORKFLOW'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'DISABLE_SERVER_SIDE_CURSORS': True,
-            'NAME': 'github_actions',
-            'USER': 'admin',
-            'PASSWORD': 'admin',
-            'HOST': '127.0.0.1',
-            'PORT': '5432',
-        }
-    }
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'social_core.backends.github.GithubOAuth2',
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
-        'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
@@ -159,7 +149,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-
 TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
@@ -170,9 +159,7 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static_root/",
-]
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
