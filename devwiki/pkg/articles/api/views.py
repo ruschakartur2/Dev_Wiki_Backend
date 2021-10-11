@@ -4,12 +4,12 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from pkg.articles.permissions import IsBaned, IsMuted, IsModer, IsOwnerOrReadOnly
-from pkg.articles.models import Article, Tag, Comment, ArticleVisits
+from pkg.articles.models import Article, Tag, Comment, ArticleVisits, ArticleRating
 from .serializers import ArticleListSerializer, ArticleCreateUpdateSerializer, \
-    ArticleCommentSerializer, ArticleTagSerializer
+    ArticleCommentSerializer, ArticleTagSerializer, ArticleRatingSerializer
 
 
-class PublicArticleViewset(viewsets.ModelViewSet):
+class PublicArticleViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication, ]
 
     def get_permissions(self):
@@ -23,7 +23,7 @@ class PublicArticleViewset(viewsets.ModelViewSet):
             return [permission() for permission in self.permission_classes]
 
 
-class ArticleViewSet(PublicArticleViewset):
+class ArticleViewSet(PublicArticleViewSet):
     """
     Manage articles in database
     """
@@ -74,8 +74,50 @@ class ArticleViewSet(PublicArticleViewset):
         serializer = ArticleCommentSerializer(comments, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['post'])
+    def vote(self, request, slug):
+        """
+        Endpoint to rating vote
 
-class ArticleCommentViewSet(PublicArticleViewset):
+        @param request:
+        @param slug:
+        @return:
+        """
+        article = self.get_object()
+        rating = ArticleRating.objects.filter(user=self.request.user, article=article)
+        star = int(request.data['rating'])
+        if 0 <= star <= 5:
+            if rating:
+                rating.update(star=star)
+            else:
+                ArticleRating.objects.create(user=self.request.user, article=article, star=star)
+
+            serializer = ArticleListSerializer(article)
+            return Response(serializer.data)
+        else:
+            return Response({'error': 'Invalid number, select value from 0 to 5'})
+
+
+class ArticleRatingViewSet(PublicArticleViewSet):
+    queryset = ArticleRating.objects.all()
+    serializer_class = ArticleRatingSerializer
+    permission_classes_by_action = {
+        'create': [IsAuthenticated],
+        'list': [AllowAny],
+        'update': [IsOwnerOrReadOnly or IsAdminUser],
+        'partial_update': [IsOwnerOrReadOnly or IsAdminUser],
+        'retrieve': [AllowAny],
+        'destroy': [IsOwnerOrReadOnly or IsAdminUser],
+    }
+
+    def perform_create(self, serializer):
+        """
+        Create a new vote
+        """
+        serializer.save(user=self.request.user)
+
+
+class ArticleCommentViewSet(PublicArticleViewSet):
     """
     Manage comments in database
     """
@@ -105,7 +147,7 @@ class ArticleCommentViewSet(PublicArticleViewset):
         return self.queryset
 
 
-class ArticleTagViewSet(PublicArticleViewset):
+class ArticleTagViewSet(PublicArticleViewSet):
     """
     Manage tags in database
     """
