@@ -172,3 +172,55 @@ USE_X_FORWARDED_HOST = True
 SOCIAL_AUTH_GITHUB_KEY = env.str('github_client_id')
 SOCIAL_AUTH_GITHUB_SECRET = env.str('github_client_secret')
 SOCIAL_AUTH_GITHUB_SCOPE = [env.str('github_scope'), ]
+
+
+# Log configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(name)-12s %(levelname)-8s %(message)s'
+        },
+        'file': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+        },
+        'request': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'file',
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'filename': os.path.join(BASE_DIR, 'logs/devwiki.log'),
+        },
+        'request_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/devwiki_request.log'),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'formatter': 'request'
+
+        }
+    },
+    'loggers': {
+        '': {
+            'level': 'ERROR',
+            'handlers': ['console', 'file']
+        },
+        'django.request': {
+            'handlers': ['request_handler'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+    }
+}
