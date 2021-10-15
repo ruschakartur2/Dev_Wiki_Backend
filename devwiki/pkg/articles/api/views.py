@@ -74,6 +74,18 @@ class ArticleViewSet(PublicArticleViewSet):
         serializer = ArticleCommentSerializer(comments, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def popular(self, request):
+        articles = self.queryset.order_by('visits')
+        serializer = self.get_serializer(articles, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def newest(self, request):
+        articles = self.queryset.order_by('-id')
+        serializer = self.get_serializer(articles, many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['post'])
     def vote(self, request, slug):
         """

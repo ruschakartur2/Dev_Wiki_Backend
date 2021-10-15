@@ -5,7 +5,7 @@ from .models import Article, ArticleRating, ArticleVisits, Comment, Tag
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ['title', 'created_at']
-    list_filter = ['created_at', 'tags']
+    list_filter = ['created_at', 'tags', 'rating']
 
 
 admin.site.register(Article, ArticleAdmin)
