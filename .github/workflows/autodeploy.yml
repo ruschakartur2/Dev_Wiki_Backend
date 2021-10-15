@@ -13,7 +13,16 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          db_name: ${{ secrets.DB_NAME }}
+          db_user: ${{ secrets.DB_USER }}
+          db_password: ${{ secrets.DB_PASSWORD }}
+          github_client_id: ${{ secrets.GH_CLIENT_ID }}
+          github_client_secret: ${{ secrets.GH_CLIENT_SECRET }}
+          github_scope: ${{ secrets.GH_SCOPE }}
+          debug: ${{ secrets.DEBUG }}
+          
     services:
       postgres:
         image: postgres:10.8
@@ -42,16 +51,6 @@ jobs:
          python -m pip install --upgrade pip
          pip install -r requirements.txt
     - name: Make migrations
-      env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          db_name: ${{ secrets.DB_NAME }}
-          db_user: ${{ secrets.DB_USER }}
-          db_password: ${{ secrets.DB_PASSWORD }}
-          github_client_id: ${{ secrets.GH_CLIENT_ID }}
-          github_client_secret: ${{ secrets.GH_CLIENT_SECRET }}
-          github_scope: ${{ secrets.GH_SCOPE }}
-          debug: ${{ secrets.DEBUG }}
-          
       run: python devwiki/manage.py makemigrations 
 
     - name: Run tests
