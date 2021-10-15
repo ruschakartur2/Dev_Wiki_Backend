@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [ master ]
     paths-ignore:
-      - 'DevWikiBackend/.env'
+      - 'devwiki/.env'
 jobs:
   build:
 
@@ -41,10 +41,10 @@ jobs:
          python -m pip install --upgrade pip
          pip install -r requirements.txt
     - name: Make migrations
-      run: python manage.py makemigrations 
+      run: python devwiki/manage.py makemigrations 
 
     - name: Run tests
-      run: python manage.py test
+      run: python devwiki/manage.py test
     - uses: actions/checkout@v2
 
 
